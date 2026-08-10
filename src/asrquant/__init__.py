@@ -1,0 +1,230 @@
+"""ASRQuant: auditable end-to-end quantitative research in Python."""
+from .api import QuantLab
+from .audit import AuditResult, implementation_audit
+from .backtest import BacktestResult, compare_backtests, run_backtest
+from .config import BacktestSpec, CostModel, MissingDataPolicy, PlotConfig
+from .data import (
+    clean_prices,
+    data_fingerprint,
+    data_quality_report,
+    load_prices,
+    load_sql,
+    log_returns,
+    resample_ohlcv,
+    simple_returns,
+)
+from .derivatives import (
+    OptionPrice,
+    bachelier_greeks,
+    bachelier_price,
+    black76_price,
+    black_scholes_greeks,
+    black_scholes_price,
+    crr_binomial_price,
+    implied_volatility,
+    price_option,
+)
+from .machine_learning import (
+    WalkForwardMLResult,
+    forward_target,
+    lag_features,
+    technical_features,
+    walk_forward_fit,
+    resolve_estimator,
+)
+from .martingales import MartingaleResult, discount_process, martingale_diagnostics
+from .fixed_income import bond_price, bootstrap_zero_curve, convexity, macaulay_duration, modified_duration, yield_to_maturity, zero_coupon_price
+from .volatility import VolatilityForecast, ewma_volatility, garch_forecast, garman_klass_volatility, parkinson_volatility, realized_volatility
+from .metrics import summary_metrics
+from .statistics import autoregression_fit
+from .models import ModelFactory, models, create as create_model
+from .easy import PlotHandle, date_range, fit, frame, open_lab, read_table, report, save, series, show, visualize
+from . import math
+from . import statistics as stats
+from . import research
+from . import trading
+from . import optimization as portfolio
+from . import viz as visuals
+from . import derivatives as options
+from . import simulation as stochastic
+from . import monte_carlo as mc
+from . import approximation as approx
+from . import fixed_income as rates
+from . import volatility as vol
+from .provenance import build_manifest
+from .literature import (
+    HypothesisCandidate,
+    HypothesisRegistry,
+    LiteratureCorpus,
+    PaperDocument,
+    SourceExcerpt,
+)
+from .workflow import (
+    DataPlan,
+    DataRequirement,
+    DecisionResult,
+    EconomicHypothesis,
+    FeaturePlan,
+    FeatureSpec,
+    PortfolioSpec,
+    HypothesisTestResult,
+    ResearchProject,
+    RobustnessResult,
+    SignalSpec,
+    autoresearch,
+    research_project,
+)
+from .trading import (
+    BrokerAdapter,
+    Fill,
+    Order,
+    OrderSide,
+    OrderStatus,
+    OrderType,
+    PaperBroker,
+    PaperTrader,
+    PaperTradingResult,
+    RiskPolicy,
+    paper_trade,
+)
+from .providers import (
+    AlphaVantageProvider,
+    BinanceProvider,
+    FREDProvider,
+    MarketDataProvider,
+    PollingFeed,
+    YahooProvider,
+    download,
+    get_provider,
+)
+from .surfaces import SurfaceResult, evaluate_surface, evaluate_surface_animation, evaluate_parameter_surface, surface_from_dataframe
+from .monte_carlo import (
+    MonteCarloResult,
+    correlated_normal,
+    empirical_quantile,
+    euler_maruyama,
+    event_probability,
+    expected_shortfall as monte_carlo_expected_shortfall,
+    hedging_loss,
+    mean_confidence_interval,
+    monte_carlo_parameter_surface,
+    normal_samples,
+    proportional_transaction_cost,
+    run_monte_carlo,
+    sample_variance,
+    standard_error,
+    uniform_inverse_transform,
+    value_at_risk as monte_carlo_value_at_risk,
+)
+from .approximation import (
+    ApproximationResult,
+    bilinear_interpolation,
+    cubic_spline,
+    finite_difference_gradient,
+    finite_difference_hessian,
+    gaussian_process,
+    kernel_regression,
+    linear_interpolation,
+    rbf_interpolation,
+    regression_metrics,
+    response_regression,
+    surface_gradient,
+    surface_hessian,
+)
+from .simulation import (
+    MonteCarloPriceResult,
+    SimulationResult,
+    arithmetic_brownian_motion,
+    asian_option_mc,
+    cir_process,
+    european_option_mc,
+    geometric_brownian_motion,
+    correlated_gbm,
+    regime_switching_prices,
+    heston_process,
+    merton_jump_diffusion,
+    monte_carlo_price,
+    ornstein_uhlenbeck,
+    simulate,
+    simulate_gbm,
+    stationary_bootstrap,
+    vasicek_process,
+)
+
+
+from .production import (
+    CheckLevel,
+    CheckState,
+    ReadinessCheck,
+    ProductionReadinessReport,
+    DeploymentEvidence,
+    ProductionReadinessGate,
+    DeploymentCertificate,
+)
+from .audit_store import AuditEvent, SQLiteAuditStore
+from .live import (
+    BrokerEnvironment,
+    HealthState,
+    ReconciliationState,
+    BrokerCredentials,
+    AccountSnapshot,
+    PositionSnapshot,
+    BrokerOrderReceipt,
+    MarketDataSnapshot,
+    BrokerHealth,
+    RiskDecision,
+    ReconciliationReport,
+    LiveRiskPolicy,
+    ExecutionBroker,
+    AlpacaBroker,
+    PersistentKillSwitch,
+    PreTradeRiskEngine,
+    LiveTradingEngine,
+)
+
+from .version import __version__
+
+__all__ = [
+    "__version__", "QuantLab", "BacktestSpec", "CostModel", "MissingDataPolicy", "PlotConfig",
+    "ModelFactory", "models", "create_model", "PlotHandle", "visualize", "show", "save", "report", "fit",
+    "open_lab", "frame", "series", "read_table", "date_range", "math", "stats", "portfolio", "visuals",
+    "options", "stochastic", "mc", "approx", "rates", "vol", "research", "trading",
+    "BacktestResult", "AuditResult", "run_backtest", "compare_backtests", "implementation_audit",
+    "clean_prices", "simple_returns", "log_returns", "load_prices", "load_sql",
+    "resample_ohlcv", "data_quality_report", "data_fingerprint", "summary_metrics", "autoregression_fit", "build_manifest",
+    "OptionPrice", "black_scholes_price", "black_scholes_greeks", "bachelier_price",
+    "bachelier_greeks", "black76_price", "crr_binomial_price", "implied_volatility", "price_option",
+    "SurfaceResult", "evaluate_surface", "evaluate_surface_animation", "evaluate_parameter_surface", "surface_from_dataframe",
+    "SimulationResult", "MonteCarloPriceResult", "simulate", "simulate_gbm",
+    "arithmetic_brownian_motion", "geometric_brownian_motion", "correlated_gbm", "regime_switching_prices", "ornstein_uhlenbeck",
+    "cir_process", "vasicek_process", "heston_process", "merton_jump_diffusion", "stationary_bootstrap",
+    "monte_carlo_price", "european_option_mc", "asian_option_mc",
+    "MonteCarloResult", "run_monte_carlo", "empirical_quantile", "event_probability",
+    "sample_variance", "standard_error", "mean_confidence_interval",
+    "monte_carlo_value_at_risk", "monte_carlo_expected_shortfall",
+    "uniform_inverse_transform", "normal_samples", "correlated_normal", "euler_maruyama",
+    "proportional_transaction_cost", "hedging_loss", "monte_carlo_parameter_surface",
+    "ApproximationResult", "linear_interpolation", "bilinear_interpolation", "cubic_spline",
+    "kernel_regression", "rbf_interpolation", "gaussian_process", "response_regression",
+    "regression_metrics", "finite_difference_gradient", "finite_difference_hessian",
+    "surface_gradient", "surface_hessian",
+    "MartingaleResult", "discount_process", "martingale_diagnostics",
+    "WalkForwardMLResult", "lag_features", "technical_features", "forward_target", "walk_forward_fit", "resolve_estimator",
+    "MarketDataProvider", "AlphaVantageProvider", "BinanceProvider", "FREDProvider", "YahooProvider",
+    "PollingFeed", "download", "get_provider",
+    "zero_coupon_price", "bond_price", "yield_to_maturity", "macaulay_duration", "modified_duration", "convexity", "bootstrap_zero_curve",
+    "VolatilityForecast", "realized_volatility", "parkinson_volatility", "garman_klass_volatility", "ewma_volatility", "garch_forecast",
+    "SourceExcerpt", "PaperDocument", "HypothesisCandidate", "HypothesisRegistry", "LiteratureCorpus",
+    "DataRequirement", "DataPlan", "EconomicHypothesis", "FeatureSpec", "FeaturePlan", "SignalSpec",
+    "PortfolioSpec", "HypothesisTestResult", "RobustnessResult", "DecisionResult", "ResearchProject", "research_project", "autoresearch",
+    "OrderSide", "OrderType", "OrderStatus", "Order", "Fill", "RiskPolicy", "BrokerAdapter",
+    "PaperBroker", "PaperTrader", "PaperTradingResult", "paper_trade",
+    "CheckLevel", "CheckState", "ReadinessCheck", "ProductionReadinessReport",
+    "DeploymentEvidence", "ProductionReadinessGate", "DeploymentCertificate",
+    "AuditEvent", "SQLiteAuditStore",
+    "BrokerEnvironment", "HealthState", "ReconciliationState", "BrokerCredentials",
+    "AccountSnapshot", "PositionSnapshot", "BrokerOrderReceipt", "MarketDataSnapshot",
+    "BrokerHealth", "RiskDecision", "ReconciliationReport", "LiveRiskPolicy",
+    "ExecutionBroker", "AlpacaBroker", "PersistentKillSwitch", "PreTradeRiskEngine",
+    "LiveTradingEngine",
+]

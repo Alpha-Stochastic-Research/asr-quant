@@ -1,0 +1,11 @@
+include README.md LICENSE CITATION.cff CHANGELOG.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md RELEASE_NOTES.md RELEASE_CHECKLIST.md PRODUCTION_READINESS_CHECKLIST.md THREAT_MODEL.md PYPI_DEPLOYMENT_GUIDE_FR.md PAPER_PACKAGE_CONTRACT_v1.0.0.md VALIDATION_v1.0.0.txt
+recursive-include docs *.md
+recursive-include deployment *.json
+recursive-include examples *.py *.csv
+recursive-include benchmarks *.py *.csv
+recursive-include paper *.tex *.pdf *.png
+recursive-include scripts *.py *.sh
+recursive-include tests *.py *.pdf
+recursive-include requirements *.txt
+prune **/__pycache__
+global-exclude *.py[cod]
