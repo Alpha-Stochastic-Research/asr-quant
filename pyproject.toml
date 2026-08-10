@@ -57,11 +57,11 @@ asrquant = "asrquant.cli:main"
 
 [project.urls]
 Homepage = "https://www.asr-lab.online"
-Repository = "https://github.com/Alpha-Stochastic-Research/asrquant"
-Documentation = "https://github.com/Alpha-Stochastic-Research/asrquant/tree/main/docs"
-Issues = "https://github.com/Alpha-Stochastic-Research/asrquant/issues"
-Changelog = "https://github.com/Alpha-Stochastic-Research/asrquant/blob/main/CHANGELOG.md"
-Paper = "https://github.com/Alpha-Stochastic-Research/asrquant/blob/main/paper/ASRQuant_paper.pdf"
+Repository = "https://github.com/Alpha-Stochastic-Research/asr-quant"
+Documentation = "https://github.com/Alpha-Stochastic-Research/asr-quant/tree/main/docs"
+Issues = "https://github.com/Alpha-Stochastic-Research/asr-quant/issues"
+Changelog = "https://github.com/Alpha-Stochastic-Research/asr-quant/blob/main/CHANGELOG.md"
+Paper = "https://github.com/Alpha-Stochastic-Research/asr-quant/blob/main/paper/ASRQuant_paper.pdf"
 
 [tool.setuptools.packages.find]
 where = ["src"]
