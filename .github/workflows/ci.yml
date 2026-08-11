@@ -1,0 +1,247 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility:
+    name: Compatibility (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install package and development tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Compile package
+        run: python -m compileall -q src tests examples scripts
+      - name: Run core compatibility tests
+        run: python scripts/test_all.py --group core
+      - name: Run one-import API tests
+        run: python scripts/test_all.py --group api
+      - name: Check command-line interface
+        run: |
+          asrquant --version
+          asrquant --help
+
+  domain-tests:
+    name: Domain tests (${{ matrix.group }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [quant, surfaces, paper, production]
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package and development tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Run isolated domain group
+        run: python scripts/test_all.py --group "${{ matrix.group }}"
+
+  quality:
+    name: Quality and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements/quality.txt
+      - name: Install package and pinned quality tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install --requirement requirements/quality.txt
+          python -m pip uninstall --yes pytest-cov || true
+          python -m pip check
+      - name: Ruff correctness checks
+        run: python -m ruff check src tests scripts
+      - name: Type-check production boundary
+        run: >
+          python -m mypy --python-version 3.12
+          src/asrquant/production.py
+          src/asrquant/audit_store.py
+          src/asrquant/live.py
+      - name: Coverage gate
+        env:
+          PYTHONPATH: src
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+          MPLBACKEND: Agg
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          NUMEXPR_NUM_THREADS: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .coverage coverage.xml
+          COVERAGE_INCLUDE="src/asrquant/production.py,src/asrquant/audit_store.py,src/asrquant/live.py"
+          python -m coverage erase
+          python -m coverage run \
+            --branch \
+            --source=src/asrquant \
+            -m pytest \
+            --noconftest \
+            tests/test_production_readiness_v1.py
+          python -m coverage report \
+            --include="$COVERAGE_INCLUDE" \
+            --show-missing \
+            --fail-under=90
+          python -m coverage xml \
+            --include="$COVERAGE_INCLUDE" \
+            -o coverage.xml
+          test -s coverage.xml
+      - name: Upload coverage evidence
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-report
+          path: coverage.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  security:
+    name: Security and supply chain
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements/runtime.txt
+            requirements/security.txt
+      - name: Install pinned security tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --requirement requirements/security.txt
+      - name: Build isolated shipped-runtime environment
+        shell: bash
+        run: |
+          rm -rf .venv-runtime security-evidence
+          mkdir -p security-evidence
+          python -m venv .venv-runtime
+          .venv-runtime/bin/python -m pip install --upgrade pip
+          .venv-runtime/bin/python -m pip install --requirement requirements/runtime.txt
+          .venv-runtime/bin/python -m pip check
+          .venv-runtime/bin/python -m pip freeze \
+            --exclude pip --exclude setuptools --exclude wheel \
+            > security-evidence/resolved-runtime.txt
+      - name: Audit resolved shipped dependencies
+        run: >
+          python -m pip_audit
+          --strict
+          --progress-spinner off
+          --requirement security-evidence/resolved-runtime.txt
+          --no-deps
+      - name: Install local package without changing resolved dependencies
+        run: |
+          .venv-runtime/bin/python -m pip install --no-deps .
+          .venv-runtime/bin/python -m pip check
+          .venv-runtime/bin/python -c "import asrquant; print(asrquant.__version__)"
+      - name: Static security scan
+        run: >
+          python -m bandit
+          --quiet
+          --recursive src/asrquant
+          --exclude tests
+          --severity-level medium
+          --confidence-level medium
+          --format json
+          --output security-evidence/bandit.json
+      - name: Secret scan
+        shell: bash
+        run: |
+          detect-secrets scan src/asrquant .github pyproject.toml \
+            > security-evidence/secrets-baseline.json
+          python scripts/check_secret_scan.py security-evidence/secrets-baseline.json
+      - name: Generate CycloneDX SBOM for shipped runtime
+        shell: bash
+        run: >
+          cyclonedx-py environment .venv-runtime
+          --pyproject pyproject.toml
+          --output-format JSON
+          --output-file security-evidence/sbom.cdx.json
+      - name: Upload security evidence
+        uses: actions/upload-artifact@v5
+        with:
+          name: security-evidence
+          path: security-evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+  distribution:
+    name: Validate distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+      - name: Build wheel and source distribution
+        run: python -m build
+      - name: Validate package metadata
+        run: python -m twine check --strict dist/*
+      - name: Smoke-test wheel
+        shell: bash
+        run: |
+          python -m venv .venv-wheel
+          . .venv-wheel/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.whl
+          python -c "import asrquant as asr, tomllib; expected=tomllib.load(open('pyproject.toml','rb'))['project']['version']; assert asr.__version__ == expected"
+      - name: Upload distributions
+        uses: actions/upload-artifact@v5
+        with:
+          name: python-package-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 30

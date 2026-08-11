@@ -1,0 +1,14 @@
+# ASRQuant runtime dependency audit input.
+# Keep this synchronized with [project].dependencies in pyproject.toml.
+numpy>=1.26,<3
+pandas>=2.0,<4
+scipy>=1.11,<2
+matplotlib>=3.8,<4
+plotly>=5.20,<7
+statsmodels>=0.14,<1
+scikit-learn>=1.4,<2
+jinja2>=3.1,<4
+pydantic>=2.6,<3
+PyYAML>=6.0,<7
+requests>=2.31,<3
+pypdf>=6.14.2,<7
