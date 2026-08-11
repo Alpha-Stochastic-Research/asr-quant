@@ -17,7 +17,7 @@ from datetime import date, timedelta
 from hashlib import sha256
 import json
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 import numpy as np
 import pandas as pd
@@ -242,7 +242,6 @@ def scan_market(
     frame = _numeric_frame(data)
     observations: list[ResearchObservation] = []
     n = len(frame)
-    half = n // 2
     window = rolling_window or max(10, min(63, n // 5))
     for column in frame.columns:
         x = frame[column].dropna()
