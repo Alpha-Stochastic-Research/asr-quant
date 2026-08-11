@@ -101,7 +101,6 @@ jobs:
       - name: Coverage gate
         env:
           PYTHONPATH: src
-          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
           MPLBACKEND: Agg
           OPENBLAS_NUM_THREADS: "1"
           OMP_NUM_THREADS: "1"
