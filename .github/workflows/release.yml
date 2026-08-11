@@ -78,7 +78,7 @@ jobs:
           sbom-path: release-metadata/asrquant-${{ github.event.release.tag_name }}-sbom.cdx.json
 
       - name: Upload Python distributions
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: python-package-distributions
           path: |
@@ -88,7 +88,7 @@ jobs:
           retention-days: 30
 
       - name: Upload release metadata
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: release-metadata
           path: release-metadata/

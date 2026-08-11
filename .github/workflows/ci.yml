@@ -128,7 +128,7 @@ jobs:
             -o coverage.xml
           test -s coverage.xml
       - name: Upload coverage evidence
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage.xml
@@ -202,7 +202,7 @@ jobs:
           --output-format JSON
           --output-file security-evidence/sbom.cdx.json
       - name: Upload security evidence
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: security-evidence
           path: security-evidence/
@@ -237,7 +237,7 @@ jobs:
           python -m pip install dist/*.whl
           python -c "import asrquant as asr, tomllib; expected=tomllib.load(open('pyproject.toml','rb'))['project']['version']; assert asr.__version__ == expected"
       - name: Upload distributions
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: python-package-distributions
           path: |

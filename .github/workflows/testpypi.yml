@@ -45,7 +45,7 @@ jobs:
           .test-install/bin/asrquant --version
 
       - name: Upload Python distributions
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: python-package-distributions
           path: |
