@@ -1,0 +1,5 @@
+# Reproducible security-tool environment for GitHub Actions.
+pip-audit==2.10.1
+bandit[toml]==1.9.4
+detect-secrets==1.5.0
+cyclonedx-bom==7.3.0

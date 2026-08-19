@@ -1,0 +1,31 @@
+{
+  "release_version": "1.0.0",
+  "ci_passed": false,
+  "test_count": 0,
+  "coverage_percent": 0.0,
+  "static_analysis_passed": false,
+  "dependency_scan_passed": false,
+  "secrets_scan_passed": false,
+  "sbom_present": false,
+  "artifacts_signed": false,
+  "reproducible_build_verified": false,
+  "disaster_recovery_tested": false,
+  "rollback_tested": false,
+  "monitoring_enabled": false,
+  "alerting_enabled": false,
+  "durable_audit_log_enabled": false,
+  "time_synchronization_verified": false,
+  "broker_paper_days": 0,
+  "broker_paper_orders": 0,
+  "reconciliation_mismatches": 1,
+  "unresolved_critical_incidents": 1,
+  "operator_approved": false,
+  "legal_compliance_reviewed": false,
+  "data_licenses_reviewed": false,
+  "strategy_owner_approved": false,
+  "model_validation_approved": false,
+  "change_ticket": "",
+  "notes": {
+    "instructions": "Replace defaults with verifiable target-environment evidence. Do not mark a check true without an artifact, report, ticket or named approval."
+  }
+}
