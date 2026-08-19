@@ -1,18 +1,64 @@
+<div align="center">
+
 # ASRQuant
 
-**Auditable quantitative finance research in Python.**
+### Auditable quantitative finance research in Python
 
-ASRQuant is an open-source Python toolkit developed by **Alpha Stochastic Research (ASR)** for building clear, reproducible and reviewable quantitative-finance workflows.
+**From scientific literature and economic hypotheses to auditable quantitative decisions, guarded broker execution, and production-readiness controls in Python.**
 
-It brings market data, research design, statistics, machine learning, stochastic simulation, derivatives, fixed income, portfolio analytics, backtesting, visualization and controlled execution into one public interface:
+<br>
 
-```python
-import asrquant as asr
-```
+[![PyPI](https://img.shields.io/pypi/v/asrquant?label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/asrquant/)
+[![Python](https://img.shields.io/pypi/pyversions/asrquant?label=Python&logo=python&logoColor=white)](https://pypi.org/project/asrquant/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Research](https://img.shields.io/badge/Focus-Quantitative%20Finance-0A66C2)](https://www.asr-lab.online)
 
-The goal is not to hide quantitative assumptions behind a black box. ASRQuant is designed to make the important choices — data, chronology, costs, model parameters, risk limits and experiment specifications — explicit and auditable.
+[**Install**](#installation) ·
+[**Quick Start**](#quick-start) ·
+[**Capabilities**](#capabilities) ·
+[**Fixed Income & Rates**](#fixed-income--interest-rates) ·
+[**Research Workflow**](#research-workflow) ·
+[**Documentation**](docs/)
 
-[PyPI](https://pypi.org/project/asrquant/) · [Documentation](docs/) · [Changelog](CHANGELOG.md) · [License](LICENSE)
+</div>
+
+---
+
+## Overview
+
+**ASRQuant** is an open-source quantitative-finance research package developed by **Alpha Stochastic Research (ASR)**.
+
+It provides a compact, explicit and reproducible interface for:
+
+- scientific-paper ingestion and source-linked research;
+- hypothesis discovery and research design;
+- market-data preparation;
+- feature and signal construction;
+- econometrics and machine learning;
+- stochastic simulation and Monte Carlo;
+- derivative pricing;
+- fixed-income and interest-rate modelling;
+- portfolio analytics;
+- backtesting and robustness analysis;
+- visualization and reporting;
+- paper trading;
+- production-readiness controls;
+- tamper-evident audit trails;
+- explicitly authorized broker execution.
+
+The objective is simple:
+
+> **Workflows that normally require many notebooks, formulas, plotting scripts and validation steps should be expressible in a few readable lines — without hiding the assumptions that materially affect the result.**
+
+### Release status
+
+> **ASRQuant 1.1.0 — stable public API**
+>
+> The 1.0.0 paper contract remains preserved. Version 1.1.0 adds the Research Discovery / Weekly Research operating layer and a comprehensive interest-rate research stack.
+>
+> Guarded live-broker primitives remain **fail-closed** and require deployment-specific authorization. Installing the package does not authorize live capital deployment.
+
+ASRQuant is research software. It is **not financial advice** and is not an HFT exchange gateway.
 
 ---
 
@@ -20,13 +66,13 @@ The goal is not to hide quantitative assumptions behind a black box. ASRQuant is
 
 ASRQuant requires **Python 3.10+**.
 
-### Install
+### Install from PyPI
 
 ```bash
 pip install asrquant
 ```
 
-### Upgrade
+### Upgrade to the latest release
 
 ```bash
 pip install --upgrade asrquant
@@ -38,7 +84,7 @@ pip install --upgrade asrquant
 pip install "asrquant[all]"
 ```
 
-Available optional groups:
+### Optional dependency groups
 
 | Extra | Purpose |
 |---|---|
@@ -58,7 +104,7 @@ import asrquant as asr
 print(asr.__version__)
 ```
 
-Or from the terminal:
+Or:
 
 ```bash
 asrquant --version
@@ -66,103 +112,242 @@ asrquant --version
 
 ---
 
-## 60-second quick start
+## Quick Start
 
-A standard ASRQuant workflow can begin with a CSV and end with an auditable backtest and report:
+### Five-line workflow
 
 ```python
 import asrquant as asr
 
 lab = asr.open_lab("prices.csv", date_column="Date")
 result = lab.backtest("sma", fast=20, slow=100, costs_bps=5)
-
-asr.save(result, "equity.png", kind="equity")
+asr.save(result, "dashboard.png", kind="dashboard")
 asr.report(result, "report.html")
 ```
 
-A `BacktestResult` keeps the information needed to inspect the experiment rather than returning only a chart. This includes strategy returns, equity, turnover, modeled costs, metrics, execution information and reproducibility fingerprints.
+A `BacktestResult` keeps the information required to inspect the experiment rather than returning only a chart.
 
----
+It includes:
 
-## What ASRQuant covers
-
-ASRQuant is organized by **research task**, not by backend library.
-
-| Area | Main interface | Typical use |
-|---|---|---|
-| Research workflows | `asr.research`, `asr.discovery` | Literature, hypotheses, research candidates, reproducible research cycles |
-| Data | `asr.open_lab`, `asr.read_table`, `asr.download` | Load, clean, validate and prepare market or macro data |
-| Backtesting | `lab.backtest`, `asr.run_backtest` | Strategy testing with chronology, turnover and transaction costs |
-| Fixed income & rates | `asr.rates`, `asr.RateQuantLab` | Curves, bonds, FRAs, swaps, OIS, caps/floors, swaptions, SABR, short-rate models and rate risk |
-| Derivatives | `asr.options` | Black-Scholes, Bachelier, Black-76, binomial pricing, Greeks and implied volatility |
-| Stochastic simulation | `asr.stochastic`, `asr.mc` | GBM, Heston, jump diffusion, CIR, Vasicek, Monte Carlo and SDE experiments |
-| Statistics | `asr.stats` | Regression, econometrics, bootstrap and statistical testing |
-| Machine learning | `asr.models`, `lab.ml` | Walk-forward ML, feature engineering and model evaluation |
-| Portfolio analytics | `asr.portfolio` | Allocation, covariance, optimization and portfolio research |
-| Volatility | `asr.vol` | Realized, Parkinson, Garman-Klass, EWMA and GARCH volatility |
-| Visualization | `asr.visualize`, `asr.show`, `asr.save`, `asr.visuals` | Research figures, surfaces, dashboards and diagnostics |
-| Reporting & provenance | `asr.report`, `asr.build_manifest` | Reproducible reports and experiment provenance |
-| Trading controls | `asr.trading` | Paper trading, risk policies, readiness checks and guarded broker execution |
+- validated prices and asset returns;
+- target and effective weights;
+- gross and net strategy returns;
+- equity curve;
+- turnover;
+- aggregate and decomposed costs;
+- strategy metrics;
+- transaction ledger;
+- immutable backtest specification;
+- data, specification and experiment fingerprints;
+- plotting and HTML-report helpers.
 
 ---
 
 ## One-import API
 
-The recommended usage pattern is:
+The recommended public interface is:
 
 ```python
 import asrquant as asr
 ```
 
-From that single import, the main namespaces are available directly:
+The main namespaces are available directly from that import:
 
-```text
-asr.models       machine-learning model factory
-asr.math         numerical helpers
-asr.stats        statistics and econometrics
-asr.portfolio    portfolio analytics and optimization
-asr.options      derivative pricing
-asr.stochastic   stochastic processes and simulation
-asr.mc           Monte Carlo utilities
-asr.rates        fixed-income and interest-rate analytics
-asr.vol          volatility analytics
-asr.research     research workflows
-asr.discovery    research discovery
-asr.trading      paper and controlled execution tools
-asr.visuals      visualization catalog
-```
+| Namespace | Purpose |
+|---|---|
+| `asr.models` | Machine-learning models |
+| `asr.math` | Numerical helpers |
+| `asr.stats` | Statistics and econometrics |
+| `asr.portfolio` | Portfolio analytics and optimization |
+| `asr.options` | Derivative pricing and Greeks |
+| `asr.stochastic` | Stochastic processes and simulation |
+| `asr.mc` | Monte Carlo utilities |
+| `asr.rates` | Fixed-income and interest-rate analytics |
+| `asr.vol` | Volatility analytics |
+| `asr.research` | Research workflows |
+| `asr.discovery` | Research discovery |
+| `asr.trading` | Paper and controlled execution |
+| `asr.visuals` | Visualization catalog |
 
-NumPy, pandas, SciPy, Matplotlib, Plotly, statsmodels and scikit-learn are used internally where appropriate. ASRQuant owns the public workflow, validation, result objects, plotting interface and reproducibility contract.
+ASRQuant uses mature scientific libraries internally, including NumPy, pandas, SciPy, Matplotlib, Plotly, statsmodels and scikit-learn.
+
+The user-facing API, validation rules, result objects, visualization interface and reproducibility contract remain owned by ASRQuant.
 
 ---
 
-## Example: backtesting
+## Capabilities
+
+### Research & Discovery
+
+From literature and evidence to structured research candidates.
 
 ```python
-import asrquant as asr
+board = asr.discovery.weekly(
+    data=curve_history,
+    domain="fixed_income",
+    n=10,
+)
 
+print(board.to_frame())
+project = board.start(0)
+```
+
+Use this layer for:
+
+- literature-driven research;
+- hypothesis discovery;
+- research-candidate ranking;
+- evidence tracking;
+- Weekly Research cycles;
+- reproducible project structure.
+
+---
+
+### Market Data
+
+```python
 lab = asr.open_lab("prices.csv", date_column="Date")
+```
 
+ASRQuant supports workflows around:
+
+- tabular market data;
+- macroeconomic data;
+- OHLCV preparation;
+- cleaning and quality checks;
+- returns;
+- resampling;
+- fingerprints and provenance.
+
+Provider interfaces include:
+
+- Yahoo Finance;
+- FRED;
+- ECB;
+- Alpha Vantage;
+- Binance.
+
+See [`docs/data_sources.md`](docs/data_sources.md).
+
+---
+
+### Backtesting
+
+```python
 result = lab.backtest(
     "momentum",
     lookback=126,
     costs_bps=5,
 )
-
-print(result.metrics)
-asr.save(result, "dashboard.png", kind="dashboard")
-asr.report(result, "backtest-report.html")
 ```
 
-For more control, use `BacktestSpec` and `CostModel` explicitly.
+The backtesting layer is designed around explicit:
 
-The backtesting layer is built around explicit chronology, position construction, turnover, execution delay, missing-data rules, leverage constraints and modeled costs.
+- signal timing;
+- execution delay;
+- transaction costs;
+- turnover;
+- rebalance frequency;
+- missing-data policy;
+- leverage;
+- position construction;
+- chronology.
 
 ---
 
-## Example: fixed income and interest rates
+### Statistics & Econometrics
 
-The rates stack can be used through the high-level `RateQuantLab` interface:
+Use:
+
+```python
+asr.stats
+```
+
+for research workflows involving:
+
+- regression;
+- autoregression;
+- bootstrap;
+- statistical tests;
+- econometric diagnostics;
+- time-series analysis.
+
+---
+
+### Machine Learning
+
+```python
+model = asr.models.random_forest(
+    task="regression",
+    trees=500,
+    depth=6,
+    seed=7,
+)
+
+result = lab.ml(
+    model,
+    train_size=504,
+    test_size=63,
+    gap=5,
+)
+```
+
+The ML layer is designed for time-aware experimentation and walk-forward evaluation.
+
+---
+
+### Stochastic Simulation & Monte Carlo
+
+Use:
+
+```python
+asr.stochastic
+asr.mc
+```
+
+Available building blocks include:
+
+- arithmetic Brownian motion;
+- geometric Brownian motion;
+- correlated GBM;
+- Ornstein-Uhlenbeck;
+- CIR;
+- Vasicek;
+- Heston;
+- Merton jump diffusion;
+- regime-switching prices;
+- Euler-Maruyama;
+- Monte Carlo confidence intervals;
+- VaR and Expected Shortfall;
+- parameter surfaces.
+
+---
+
+### Derivatives
+
+Use:
+
+```python
+asr.options
+```
+
+The derivative-pricing stack includes:
+
+- Black-Scholes;
+- Bachelier;
+- Black-76;
+- CRR binomial pricing;
+- Greeks;
+- implied volatility;
+- Monte Carlo pricing.
+
+---
+
+## Fixed Income & Interest Rates
+
+Fixed income and interest-rate modelling are first-class components of ASRQuant.
+
+### High-level rates interface
 
 ```python
 import asrquant as asr
@@ -176,130 +361,226 @@ print(rates.par_swap(0.0, 5.0))
 print(rates.diagnostics())
 ```
 
-Or through the lower-level rates API:
+### Discount curve
 
 ```python
 curve = asr.rates.DiscountCurve.from_zero_rates(
     [0.5, 1.0, 2.0, 5.0, 10.0],
     [0.020, 0.021, 0.023, 0.028, 0.030],
 )
-
-forward = curve.forward_rate(2.0, 3.0, "continuous")
-par_rate = asr.rates.swap_par_rate(curve, 0.0, 5.0)
 ```
 
-The interest-rate stack includes:
+### Forward rate
 
-- discount and zero curves;
-- forward and projection curves;
-- single-curve and multi-curve construction;
-- bonds, accrued interest, clean/dirty prices, duration, convexity and DV01;
-- FRAs, swaps, OIS and basis swaps;
-- rate futures;
-- caps, floors and swaptions;
-- implied rate volatility and caplet-volatility stripping;
-- SABR calibration;
-- Vasicek, CIR, Hull-White, Ho-Lee and Black-Karasinski models;
-- HJM and LMM simulation;
-- yield-curve PCA and level/slope/curvature factors;
-- curve scenarios, carry/roll-down and interpolation risk;
-- key-rate DV01 and hedge construction;
-- inflation, FX-forward and cross-currency building blocks.
+```python
+forward = curve.forward_rate(
+    2.0,
+    3.0,
+    "continuous",
+)
+```
+
+### Par swap rate
+
+```python
+par_rate = asr.rates.swap_par_rate(
+    curve,
+    0.0,
+    5.0,
+)
+```
+
+### Interest-rate research stack
+
+| Area | Coverage |
+|---|---|
+| Curves | Discount, zero, forward and projection curves |
+| Construction | Deposit, FRA and swap bootstrapping |
+| Multi-curve | Discounting and projection-curve workflows |
+| Bonds | Price, accrued interest, clean/dirty price, duration, convexity |
+| Risk | DV01, dollar convexity, key-rate DV01 |
+| FRAs | Forward rates and valuation |
+| Swaps | Par rate, PV, annuity, DV01 |
+| OIS | Overnight compounding, par rates and valuation |
+| Basis | Basis-swap valuation |
+| Futures | Rate ↔ futures-price conversion |
+| Caps/Floors | Caplets, floorlets, caps and floors |
+| Swaptions | Payer and receiver swaption pricing |
+| Volatility | Implied rate volatility and caplet-vol stripping |
+| SABR | Hagan approximation and calibration |
+| Short-rate models | Vasicek, CIR, Hull-White, Ho-Lee, Black-Karasinski |
+| HJM / LMM | Forward-rate simulation |
+| Curve factors | PCA, level, slope and curvature |
+| Curve risk | Interpolation risk, scenarios, carry and roll-down |
+| Hedging | Key-rate hedge construction |
+| Cross-market | FX forwards, inflation and cross-currency building blocks |
+| Parametric curves | Nelson-Siegel and Svensson calibration |
 
 ---
 
-## Example: research discovery
+## Portfolio Analytics
 
-ASRQuant can also start **before** a final hypothesis has been selected.
+Use:
 
 ```python
-import asrquant as asr
+asr.portfolio
+```
 
+for:
+
+- covariance estimation;
+- allocation;
+- portfolio construction;
+- optimization;
+- risk-aware portfolio research.
+
+---
+
+## Volatility
+
+Use:
+
+```python
+asr.vol
+```
+
+Available estimators and forecasting tools include:
+
+- realized volatility;
+- Parkinson volatility;
+- Garman-Klass volatility;
+- EWMA;
+- GARCH.
+
+---
+
+## Visualization
+
+ASRQuant exposes a backend-neutral visualization layer:
+
+```python
+asr.visualize(...)
+asr.show(...)
+asr.save(...)
+```
+
+Examples:
+
+```python
+asr.save(result, "equity.png", kind="equity")
+asr.save(result, "dashboard.png", kind="dashboard")
+```
+
+For advanced visualization helpers:
+
+```python
+asr.visuals
+```
+
+---
+
+## Research Workflow
+
+ASRQuant is designed to connect the stages of quantitative research instead of treating them as unrelated scripts.
+
+```text
+Literature / Evidence
+        ↓
+Hypothesis
+        ↓
+Data Plan
+        ↓
+Features
+        ↓
+Signals
+        ↓
+Econometric / ML Tests
+        ↓
+Portfolio Construction
+        ↓
+Backtest
+        ↓
+Robustness
+        ↓
+Decision
+        ↓
+Paper Execution
+```
+
+The full research layer includes:
+
+- `ResearchProject`;
+- `EconomicHypothesis`;
+- `DataPlan`;
+- `FeaturePlan`;
+- `SignalSpec`;
+- `PortfolioSpec`;
+- hypothesis tests;
+- robustness results;
+- decision results;
+- literature provenance;
+- research discovery.
+
+See [`docs/research_workflow.md`](docs/research_workflow.md).
+
+---
+
+## Weekly Research
+
+ASRQuant can start before a final research hypothesis exists.
+
+```python
 board = asr.discovery.weekly(
     data=curve_history,
     domain="fixed_income",
     n=10,
 )
 
-print(board.to_frame())
 project = board.start(0)
+
+cycle = asr.weekly_cycle(
+    board,
+    0,
+    launch_friday="2026-08-14",
+)
+
+cycle.publication_pack("WR-001")
 ```
 
-The discovery layer is designed to produce research candidates from explicit evidence while keeping novelty and publication claims reviewable by humans.
+The discovery engine converts transparent evidence into ranked research candidates.
 
-For the full research workflow, see [`docs/research_discovery.md`](docs/research_discovery.md) and [`docs/research_workflow.md`](docs/research_workflow.md).
+Automated candidates do **not** receive an automatic novelty claim.
 
----
+See:
 
-## Core design principles
-
-### 1. Explicit assumptions
-
-Important model, execution and data choices should be visible in code and stored with the result.
-
-### 2. Chronology first
-
-Time-series workflows are designed to preserve temporal ordering and reduce accidental look-ahead bias.
-
-### 3. Reproducible experiments
-
-Results can carry data, specification and experiment fingerprints so that the research path can be reviewed later.
-
-### 4. Auditable outputs
-
-A figure is not the experiment. Important outputs expose the underlying data, parameters, metrics and diagnostics.
-
-### 5. High-level API, inspectable internals
-
-ASRQuant aims to make common workflows concise without preventing advanced users from inspecting lower-level objects.
-
-### 6. Fail-closed live execution
-
-Installing ASRQuant does **not** authorize capital deployment. Live-broker components require explicit risk, deployment and environment controls.
+- [`docs/research_discovery.md`](docs/research_discovery.md)
+- [`docs/team_research_operating_model.md`](docs/team_research_operating_model.md)
 
 ---
 
-## Research, paper trading and live execution are different stages
+## Reproducibility & Audit
 
-ASRQuant deliberately separates:
+A serious quantitative experiment should make its assumptions inspectable.
 
-1. **Research** — data, modelling, testing and robustness;
-2. **Paper execution** — validation of the execution path without live capital;
-3. **Live authorization** — deployment-specific approval, risk limits, broker configuration and operational controls.
+ASRQuant provides tools for:
 
-The live stack includes production-readiness checks, signed deployment certificates, persistent kill-switch controls, pre-trade risk checks, reconciliation and durable audit logging.
+- data fingerprints;
+- experiment fingerprints;
+- immutable specifications;
+- manifests;
+- implementation audits;
+- validation;
+- robustness testing;
+- report generation;
+- durable execution audit trails.
 
-Start with paper execution. Read the operational documentation before connecting a broker:
+### Reproducibility checklist
 
-- [`docs/production_readiness.md`](docs/production_readiness.md)
-- [`docs/live_trading.md`](docs/live_trading.md)
-- [`docs/operations_runbook.md`](docs/operations_runbook.md)
-- [`docs/regulatory_controls.md`](docs/regulatory_controls.md)
-
----
-
-## Data providers
-
-ASRQuant includes provider interfaces for research workflows, including:
-
-- Yahoo Finance;
-- FRED;
-- ECB;
-- Alpha Vantage;
-- Binance.
-
-Provider availability, credentials, rate limits and data licenses remain provider-specific.
-
-See [`docs/data_sources.md`](docs/data_sources.md).
-
----
-
-## Reproducibility checklist
-
-For serious research, keep these choices explicit:
+Keep these choices explicit:
 
 - source and version of the data;
-- cleaning and missing-data policy;
+- cleaning rules;
+- missing-data policy;
 - signal timing;
 - execution delay;
 - transaction-cost assumptions;
@@ -307,49 +588,197 @@ For serious research, keep these choices explicit:
 - leverage and position limits;
 - train/test chronology;
 - random seeds;
-- parameter search space;
+- parameter-search space;
 - benchmark definition;
 - robustness and stress tests.
 
-ASRQuant provides infrastructure for these controls, but the researcher remains responsible for the economic and statistical validity of the experiment.
+---
+
+## Paper Trading
+
+Research validation and execution validation are separate concerns.
+
+ASRQuant provides:
+
+```python
+asr.trading
+```
+
+for controlled paper-trading workflows.
+
+The package separates three claims:
+
+1. **Research-valid**  
+   The model and backtest satisfy the chosen scientific checks.
+
+2. **Broker-paper validated**  
+   The execution path has been tested in a broker simulator over a defined observation period.
+
+3. **Live-authorized**  
+   A deployment certificate matches the exact release, broker account, risk policy, environment and maximum authorized capital.
+
+---
+
+## Production Readiness
+
+Installing ASRQuant does **not** authorize live capital deployment.
+
+The production layer includes:
+
+- deployment evidence;
+- readiness gates;
+- signed deployment certificates;
+- live risk policies;
+- pre-trade checks;
+- broker-health checks;
+- persistent kill switch;
+- reconciliation;
+- durable audit logs.
+
+Example:
+
+```python
+report = asr.ProductionReadinessGate().evaluate(evidence)
+
+print(report.ready)
+report.save("readiness-report.json")
+```
+
+Read before connecting a live broker:
+
+- [`docs/production_readiness.md`](docs/production_readiness.md)
+- [`docs/live_trading.md`](docs/live_trading.md)
+- [`docs/operations_runbook.md`](docs/operations_runbook.md)
+- [`docs/regulatory_controls.md`](docs/regulatory_controls.md)
+- [`THREAT_MODEL.md`](THREAT_MODEL.md)
+
+---
+
+## Command Line Interface
+
+Check the installed version:
+
+```bash
+asrquant --version
+```
+
+Run a readiness check:
+
+```bash
+asrquant readiness deployment-evidence.json --output readiness-report.json
+```
+
+Verify an execution audit chain:
+
+```bash
+asrquant verify-audit state/execution-audit.db
+```
+
+---
+
+## Documentation
+
+Detailed material lives in `docs/` so that this README remains readable.
+
+| Topic | Document |
+|---|---|
+| Data sources | [`docs/data_sources.md`](docs/data_sources.md) |
+| Research workflow | [`docs/research_workflow.md`](docs/research_workflow.md) |
+| Research discovery | [`docs/research_discovery.md`](docs/research_discovery.md) |
+| Production readiness | [`docs/production_readiness.md`](docs/production_readiness.md) |
+| Live trading | [`docs/live_trading.md`](docs/live_trading.md) |
+| Operations | [`docs/operations_runbook.md`](docs/operations_runbook.md) |
+| Regulatory controls | [`docs/regulatory_controls.md`](docs/regulatory_controls.md) |
 
 ---
 
 ## Development
 
-Clone the repository and install the development dependencies:
+Clone the repository:
 
 ```bash
 git clone https://github.com/Alpha-Stochastic-Research/asr-quant.git
 cd asr-quant
+```
+
+Install the development environment:
+
+```bash
 pip install -e ".[dev]"
 ```
 
-Run the project test suite:
+Run the full test suite:
 
 ```bash
 python scripts/test_all.py
 ```
 
-Useful project files:
+Useful project paths:
 
-- [`CHANGELOG.md`](CHANGELOG.md) — release history;
-- [`docs/`](docs/) — detailed documentation;
-- [`tests/`](tests/) — tested behavior and API contracts;
-- [`pyproject.toml`](pyproject.toml) — package metadata and dependency groups.
+```text
+src/asrquant/   package source
+tests/          automated tests and API contracts
+docs/           detailed documentation
+paper/          ASRQuant paper
+benchmarks/     validation and benchmark scripts
+```
+
+---
+
+## Project Links
+
+- **Website:** https://www.asr-lab.online
+- **PyPI:** https://pypi.org/project/asrquant/
+- **Repository:** https://github.com/Alpha-Stochastic-Research/asr-quant
+- **Documentation:** [`docs/`](docs/)
+- **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
+- **Paper:** [`paper/ASRQuant_paper.pdf`](paper/ASRQuant_paper.pdf)
+- **Issues:** https://github.com/Alpha-Stochastic-Research/asr-quant/issues
+
+---
+
+## Citation
+
+If ASRQuant contributes materially to academic or research work, cite the software and the associated ASRQuant research paper where appropriate.
+
+See the repository paper and release metadata for the current citation information.
 
 ---
 
 ## License
 
-ASRQuant is released under the **MIT License**. See [`LICENSE`](LICENSE).
+ASRQuant is released under the **MIT License**.
+
+See [`LICENSE`](LICENSE).
 
 ---
 
 ## Disclaimer
 
-ASRQuant is research software for quantitative-finance experimentation, education and controlled engineering workflows. It is **not financial advice**, does not guarantee the validity or profitability of a strategy, and does not replace independent model validation, broker controls, legal review, regulatory obligations or accountable human oversight.
+ASRQuant is research software for quantitative-finance experimentation, education and controlled engineering workflows.
+
+It does **not**:
+
+- provide financial advice;
+- guarantee the validity of a research hypothesis;
+- guarantee the profitability of a strategy;
+- replace independent model validation;
+- replace broker safeguards;
+- replace legal or regulatory review;
+- authorize live capital deployment.
+
+Live execution remains the responsibility of the deploying organization and accountable human operators.
 
 ---
 
-**Alpha Stochastic Research — Research · Modelling · Analysis · Impact**
+<div align="center">
+
+### Alpha Stochastic Research
+
+**Research · Modelling · Analysis · Impact**
+
+[Website](https://www.asr-lab.online) ·
+[GitHub](https://github.com/Alpha-Stochastic-Research) ·
+[PyPI](https://pypi.org/project/asrquant/)
+
+</div>
