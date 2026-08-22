@@ -1,0 +1,86 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "notebooks/**"
+      - "scripts/validate_notebook_math.py"
+      - "mkdocs.yml"
+      - "pyproject.toml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Validate notebook mathematics
+        run: python scripts/validate_notebook_math.py
+
+      - name: Install documentation dependencies
+        run: python -m pip install -e ".[docs]"
+
+      - name: Build ASRQuant documentation under /asrquant/
+        run: |
+          rm -rf site-root
+          mkdir -p site-root/asrquant
+          mkdocs build --strict --site-dir site-root/asrquant
+
+      - name: Create documentation root redirect
+        run: |
+          cat > site-root/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <meta http-equiv="refresh" content="0; url=./asrquant/">
+              <link rel="canonical" href="https://docs.asr-lab.online/asrquant/">
+              <title>ASR Documentation</title>
+            </head>
+            <body>
+              <p>Opening <a href="./asrquant/">ASRQuant Documentation</a>…</p>
+            </body>
+          </html>
+          HTML
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site-root
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

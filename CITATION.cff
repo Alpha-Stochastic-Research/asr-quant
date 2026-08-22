@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use ASRQuant in research, please cite the software and accompanying paper."
+title: "ASRQuant: From Scientific Literature to Auditable Quantitative Decisions and Algorithmic Trading"
+type: software
+authors:
+  - family-names: "TOURE"
+    given-names: "Alpha Kabinet"
+  - name: "Alpha Stochastic Research"
+version: 1.2.0
+date-released: 2026-08-19
+license: MIT
+repository-code: "https://github.com/Alpha-Stochastic-Research/asr-quant"
+url: "https://www.asr-lab.online"
+keywords:
+  - scientific literature
+  - economic hypotheses
+  - algorithmic trading
+  - paper trading
+  - quantitative finance
+  - stochastic processes
+  - Monte Carlo
+  - derivatives
+  - econometrics
+  - machine learning
+  - backtesting
+  - visualization
+  - implementation risk
+  - reproducibility
