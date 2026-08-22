@@ -1,0 +1,79 @@
+name: Publish to TestPyPI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and validate distributions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install release tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build distributions from a clean directory
+        run: |
+          rm -rf dist build src/*.egg-info
+          python -m build
+
+      - name: Validate distributions
+        run: python -m twine check --strict dist/*.whl dist/*.tar.gz
+
+      - name: Verify wheel installation
+        run: |
+          python -m venv .test-install
+          .test-install/bin/python -m pip install --upgrade pip
+          .test-install/bin/python -m pip install dist/*.whl
+          .test-install/bin/python -c "import asrquant; print(asrquant.__version__)"
+          .test-install/bin/asrquant --version
+
+      - name: Upload Python distributions
+        uses: actions/upload-artifact@v5
+        with:
+          name: python-package-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/asrquant/
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download Python distributions
+        uses: actions/download-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/
+          skip-existing: true
+          print-hash: true

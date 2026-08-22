@@ -1,0 +1,118 @@
+site_name: ASRQuant Documentation
+site_description: Official documentation for ASRQuant 1.2.0 — quantitative research, pricing, risk, portfolio construction and reproducible backtesting.
+site_author: Alpha Stochastic Research
+site_url: https://alpha-stochastic-research.github.io/asr-quant/
+repo_url: https://github.com/Alpha-Stochastic-Research/asr-quant
+repo_name: Alpha-Stochastic-Research/asr-quant
+edit_uri: edit/main/docs/
+
+copyright: Copyright © 2026 Alpha Stochastic Research — MIT License
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - search.highlight
+    - search.suggest
+  palette:
+    - scheme: default
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            show_signature_annotations: true
+            separate_signature: true
+            members_order: source
+            heading_level: 2
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - assets/stylesheets/asrquant.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Overview: getting-started/index.md
+      - Installation: getting-started/installation.md
+      - 10-minute Quickstart: getting-started/quickstart.md
+      - Core Concepts: getting-started/core-concepts.md
+  - Research Workflow:
+      - End-to-End Workflow: workflows/research-workflow.md
+      - Data & Provenance: guides/data.md
+      - Hypothesis Discovery: guides/hypotheses.md
+      - Alpha & Factor Research: guides/alpha-factors.md
+      - Portfolio & Risk: guides/portfolio-risk.md
+      - Backtesting: guides/backtesting.md
+  - Quantitative Finance:
+      - Fixed Income & Rates: guides/fixed-income-rates.md
+      - Derivatives: guides/derivatives.md
+      - Statistics & ML: guides/statistics-ml.md
+      - Market Microstructure: guides/microstructure.md
+      - Simulation & Monte Carlo: monte_carlo_universal.md
+      - Volatility: model_catalog.md
+  - Reproducibility:
+      - Research Discipline: guides/reproducibility.md
+      - Architecture 1.2: architecture_v120.md
+      - Validation: validation.md
+      - Production Readiness: production_readiness.md
+  - API Reference:
+      - API Overview: api/index.md
+      - Data: api/data.md
+      - Hypotheses: api/hypotheses.md
+      - Alpha: api/alpha.md
+      - Factors: api/factors.md
+      - Risk: api/risk.md
+      - Microstructure: api/microstructure.md
+      - Backtesting: api/backtesting.md
+      - Portfolio: api/portfolio.md
+      - Statistics: api/statistics.md
+      - Machine Learning: api/ml.md
+      - Options: api/options.md
+      - Rates: api/rates.md
+      - Research: api/research.md
+      - Trading: api/trading.md
+  - Notebook: notebook.md
+  - Release 1.2.0: release-1.2.0.md
+  - Deployment: deployment.md

@@ -1,0 +1,65 @@
+:root {
+  --md-primary-fg-color: #101114;
+  --md-accent-fg-color: #3457d5;
+}
+
+.md-header, .md-tabs {
+  box-shadow: none;
+  border-bottom: 1px solid rgba(127, 127, 127, 0.18);
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.md-typeset h2 {
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.md-typeset code {
+  border-radius: 0.25rem;
+}
+
+.asr-hero {
+  padding: 2.4rem 0 1.2rem;
+  max-width: 58rem;
+}
+
+.asr-hero h1 {
+  font-size: 2.7rem;
+  line-height: 1.05;
+  margin-bottom: 0.8rem;
+}
+
+.asr-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.72;
+}
+
+.asr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+  margin: 1.2rem 0;
+}
+
+.asr-card {
+  border: 1px solid rgba(127, 127, 127, 0.22);
+  border-radius: 0.55rem;
+  padding: 1rem 1.1rem;
+  background: rgba(127, 127, 127, 0.025);
+}
+
+.asr-card strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.md-typeset table:not([class]) {
+  font-size: 0.76rem;
+}
