@@ -1,0 +1,439 @@
+{
+  "policy": "No unannounced removal or signature change of listed symbols within the 1.x series. Additive changes are allowed.",
+  "snapshot_version": "1.3.0",
+  "symbols": {
+    "alpha": {
+      "kind": "namespace"
+    },
+    "alpha.analyze_signal": {
+      "kind": "callable",
+      "signature": "(signal: 'pd.DataFrame', forward_return: 'pd.DataFrame', *, quantiles: 'int' = 5, ic_method: 'str' = 'spearman', min_assets: 'int' = 5, gross: 'float' = 1.0) -> 'AlphaResearchReport'"
+    },
+    "alpha.capacity": {
+      "kind": "callable",
+      "signature": "(target_weights: 'pd.DataFrame', adv_value: 'pd.Series', volatility: 'pd.Series', *, expected_gross_alpha: 'float', aum_grid: 'Sequence[float] | None' = None, eta: 'float' = 0.5, spread_bps: 'float' = 0.0, annualization: 'int' = 252) -> 'CapacityResult'"
+    },
+    "backtesting": {
+      "kind": "namespace"
+    },
+    "backtesting.run": {
+      "kind": "callable",
+      "signature": "(prices: 'pd.Series | pd.DataFrame', target_weights: 'pd.Series | pd.DataFrame', spec: 'Any | None' = None)"
+    },
+    "calibration": {
+      "kind": "namespace"
+    },
+    "calibration.CalibrationProblem": {
+      "kind": "class",
+      "signature": "(model: 'Callable[[Any, Mapping[str, float]], Sequence[float] | np.ndarray]', x: 'Any', target: 'Sequence[float] | np.ndarray | pd.Series', initial: 'Mapping[str, float]', *, bounds: 'Mapping[str, tuple[float, float]] | None' = None, weights: 'Sequence[float] | np.ndarray | None' = None, loss: 'str' = 'linear', metadata: 'Mapping[str, Any] | None' = None) -> 'None'"
+    },
+    "costs": {
+      "kind": "namespace"
+    },
+    "costs.CompositeCostModel": {
+      "kind": "class",
+      "signature": "(*models: 'Any') -> 'None'"
+    },
+    "costs.FixedBps": {
+      "kind": "class",
+      "signature": "(bps: 'float') -> 'None'"
+    },
+    "costs.HalfSpread": {
+      "kind": "class",
+      "signature": "(spread_bps: 'float | None' = None) -> 'None'"
+    },
+    "costs.LinearImpact": {
+      "kind": "class",
+      "signature": "(coefficient: 'float') -> 'None'"
+    },
+    "costs.SquareRootImpact": {
+      "kind": "class",
+      "signature": "(eta: 'float' = 0.5) -> 'None'"
+    },
+    "covariance": {
+      "kind": "namespace"
+    },
+    "covariance.compare": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, estimators: 'Sequence[str]' = ('sample', 'ewma', 'ledoit_wolf', 'factor'), holdout_fraction: 'float' = 0.3, annualization: 'float' = 252.0, n_factors: 'int' = 3) -> 'CovarianceComparisonResult'"
+    },
+    "covariance.ewma": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, decay: 'float' = 0.94, annualization: 'float' = 252.0) -> 'pd.DataFrame'"
+    },
+    "covariance.factor": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, n_factors: 'int' = 3, annualization: 'float' = 252.0) -> 'pd.DataFrame'"
+    },
+    "covariance.ledoit_wolf": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, annualization: 'float' = 252.0) -> 'pd.DataFrame'"
+    },
+    "covariance.robust": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, annualization: 'float' = 252.0, random_state: 'int | None' = 0) -> 'pd.DataFrame'"
+    },
+    "covariance.sample": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, annualization: 'float' = 252.0) -> 'pd.DataFrame'"
+    },
+    "credit": {
+      "kind": "namespace"
+    },
+    "credit.CDS": {
+      "kind": "class",
+      "signature": "(maturity: 'float', spread: 'float', notional: 'float' = 1.0, payment_frequency: 'int' = 4, recovery: 'float' = 0.4, position: 'str' = 'protection_buyer') -> None"
+    },
+    "credit.HazardCurve": {
+      "kind": "class",
+      "signature": "(times: 'np.ndarray', hazards: 'np.ndarray', recovery: 'float' = 0.4, name: 'str' = 'hazard', metadata: 'dict[str, Any]' = <factory>) -> None"
+    },
+    "credit.bootstrap_hazard_curve": {
+      "kind": "callable",
+      "signature": "(discount: 'DiscountCurve', maturities: 'Sequence[float]', spreads: 'Sequence[float]', *, recovery: 'float' = 0.4, payment_frequency: 'int' = 4, max_hazard: 'float' = 5.0) -> 'HazardCurve'"
+    },
+    "data": {
+      "kind": "namespace"
+    },
+    "data.DataStore": {
+      "kind": "class",
+      "signature": "(root: 'str | Path' = '.asrquant-data', *, offline: 'bool' = False) -> 'None'"
+    },
+    "data.PointInTimeFrame": {
+      "kind": "class",
+      "signature": "(data: 'pd.DataFrame', observation_column: 'str' = 'observation_date', available_column: 'str' = 'available_date', revision_column: 'str | None' = 'revision_date') -> None"
+    },
+    "data.load": {
+      "kind": "callable",
+      "signature": "(source, date_column: 'str | None' = None, *, columns: 'Sequence[str] | None' = None, provider: 'str | None' = None, symbols: 'str | Sequence[str] | None' = None, field: 'str' = 'Close', provider_kwargs: 'dict | None' = None, format: 'str | None' = None, sheet_name: 'str | int' = 0, timeout: 'float' = 30.0, **kwargs) -> 'pd.DataFrame'"
+    },
+    "data.snapshot": {
+      "kind": "callable",
+      "signature": "(data: 'pd.Series | pd.DataFrame', *, source: 'str | None' = None, metadata: 'Mapping[str, Any] | None' = None) -> 'DataSnapshot'"
+    },
+    "data.validate": {
+      "kind": "callable",
+      "signature": "(data: 'pd.Series | pd.DataFrame')"
+    },
+    "dependence": {
+      "kind": "namespace"
+    },
+    "dependence.GaussianCopula": {
+      "kind": "class",
+      "signature": "()"
+    },
+    "dependence.StudentTCopula": {
+      "kind": "class",
+      "signature": "()"
+    },
+    "diagnostics": {
+      "kind": "namespace"
+    },
+    "factors": {
+      "kind": "namespace"
+    },
+    "factors.pca": {
+      "kind": "callable",
+      "signature": "(data: 'pd.DataFrame', n_components: 'int' = 3, *, standardize: 'bool' = False, component_prefix: 'str' = 'PC') -> 'PCAFactorResult'"
+    },
+    "hypotheses": {
+      "kind": "namespace"
+    },
+    "hypotheses.audit": {
+      "kind": "callable",
+      "signature": "(hypothesis: 'HypothesisIdea | str', *, corpus: 'LiteratureCorpus | HypothesisRegistry | str | Path | Sequence[Any] | None' = None, topic: 'str | None' = None, top_k: 'int' = 10) -> 'HypothesisAuditResult'"
+    },
+    "hypotheses.discover": {
+      "kind": "callable",
+      "signature": "(*, data: 'pd.DataFrame | pd.Series | Mapping[str, Any] | None' = None, papers: 'LiteratureCorpus | HypothesisRegistry | str | Path | Sequence[Any] | None' = None, predictions: 'pd.DataFrame | Mapping[str, Sequence[float]] | None' = None, robustness_results: 'pd.DataFrame | None' = None, robustness_metric: 'str | None' = None, domain: 'str' = 'quantitative_finance', max_candidates: 'int' = 50, audit_data_candidates: 'bool' = True, **data_kwargs: 'Any') -> 'HypothesisCollection'"
+    },
+    "hypotheses.from_data": {
+      "kind": "callable",
+      "signature": "(data: 'pd.DataFrame | pd.Series | Mapping[str, Any]', *, domain: 'str' = 'quantitative_finance', targets: 'str | Sequence[str] | None' = None, horizons: 'Sequence[int]' = (1, 5, 20), lags: 'Sequence[int]' = (0, 1, 5), transforms: 'Mapping[str, str] | None' = None, holdout_fraction: 'float' = 0.3, min_observations: 'int' = 80, fdr_alpha: 'float' = 0.05, min_abs_effect: 'float' = 0.08, max_tests: 'int' = 1500, max_candidates: 'int' = 50, include_regime_tests: 'bool' = True, include_cointegration: 'bool' = True, include_structural_scan: 'bool' = True) -> 'HypothesisCollection'"
+    },
+    "hypotheses.from_literature": {
+      "kind": "callable",
+      "signature": "(papers: 'LiteratureCorpus | HypothesisRegistry | str | Path | Sequence[Any]', *, topic: 'str | None' = None, max_candidates: 'int' = 50) -> 'HypothesisCollection'"
+    },
+    "hypotheses.search": {
+      "kind": "callable",
+      "signature": "(query: 'str', *, hypotheses: 'HypothesisCollection | Sequence[HypothesisIdea] | None' = None, papers: 'LiteratureCorpus | HypothesisRegistry | str | Path | Sequence[Any] | None' = None, topic: 'str | None' = None, top_k: 'int' = 10) -> 'HypothesisSearchResult'"
+    },
+    "mc": {
+      "kind": "namespace"
+    },
+    "mc.antithetic_normal_samples": {
+      "kind": "callable",
+      "signature": "(n: 'int', dim: 'int' = 1, *, random_state: 'int | None' = 0) -> 'np.ndarray'"
+    },
+    "mc.control_variate": {
+      "kind": "callable",
+      "signature": "(values: 'np.ndarray', control: 'np.ndarray', *, known_control_mean: 'float') -> 'VarianceReductionResult'"
+    },
+    "mc.sobol_normal_samples": {
+      "kind": "callable",
+      "signature": "(n: 'int', dim: 'int' = 1, *, scramble: 'bool' = True, random_state: 'int | None' = 0) -> 'np.ndarray'"
+    },
+    "microstructure": {
+      "kind": "namespace"
+    },
+    "microstructure.order_flow_imbalance": {
+      "kind": "callable",
+      "signature": "(bid: 'pd.Series | Iterable[float]', ask: 'pd.Series | Iterable[float]', bid_size: 'pd.Series | Iterable[float]', ask_size: 'pd.Series | Iterable[float]') -> 'pd.Series'"
+    },
+    "ml": {
+      "kind": "namespace"
+    },
+    "ml.fit": {
+      "kind": "callable",
+      "signature": "(estimator: 'Any' = 'ridge', features: 'pd.DataFrame | None' = None, target: 'pd.Series | None' = None, *, train_size: 'int', test_size: 'int', step: 'int | None' = None, gap: 'int' = 0, expanding: 'bool' = True, task: 'str' = 'regression', model_params: 'dict[str, Any] | None' = None)"
+    },
+    "model_selection": {
+      "kind": "namespace"
+    },
+    "model_selection.compare_predictions": {
+      "kind": "callable",
+      "signature": "(actual: 'pd.Series', predictions: 'Mapping[str, pd.Series]', *, n_parameters: 'Mapping[str, int] | None' = None, ranking_metric: 'str' = 'rmse') -> 'ModelComparisonResult'"
+    },
+    "options": {
+      "kind": "namespace"
+    },
+    "options.price": {
+      "kind": "callable",
+      "signature": "(model: 'str' = 'black_scholes', **kwargs: 'Any')"
+    },
+    "performance": {
+      "kind": "namespace"
+    },
+    "performance.brinson": {
+      "kind": "callable",
+      "signature": "(portfolio_weights: 'pd.Series', benchmark_weights: 'pd.Series', portfolio_returns: 'pd.Series', benchmark_returns: 'pd.Series') -> 'pd.DataFrame'"
+    },
+    "performance.factor_attribution": {
+      "kind": "callable",
+      "signature": "(portfolio_returns: 'pd.Series', factor_returns: 'pd.DataFrame', *, annualization: 'float' = 252.0) -> 'FactorAttributionResult'"
+    },
+    "portfolio": {
+      "kind": "namespace"
+    },
+    "portfolio.Constraints": {
+      "kind": "class",
+      "signature": "(long_only: 'bool' = True, max_weight: 'float | None' = 1.0, max_gross: 'float' = 1.0, target_net: 'float' = 1.0, turnover_limit: 'float | None' = None, min_weights: 'Mapping[str, float]' = <factory>, max_weights: 'Mapping[str, float]' = <factory>) -> None"
+    },
+    "portfolio.cost_aware_optimize": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', *, current_weights: 'pd.Series | Mapping[str, float] | None' = None, objective: 'str' = 'max_sharpe', constraints: 'Constraints | None' = None, covariance_method: 'str' = 'ledoit_wolf', annualization: 'float' = 252.0, risk_free_rate: 'float' = 0.0, turnover_penalty: 'float' = 0.0, l2_penalty: 'float' = 0.0) -> 'PortfolioOptimizationResult'"
+    },
+    "portfolio.optimize": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame | None' = None, *, expected_returns: 'pd.Series | np.ndarray | None' = None, covariance: 'pd.DataFrame | np.ndarray | None' = None, method: 'str' = 'minimum_variance', annualization: 'int' = 252, covariance_method: 'str' = 'sample', risk_free_rate: 'float' = 0.0, long_only: 'bool' = True) -> 'PortfolioOptimizationResult'"
+    },
+    "portfolio.risk_budgeting": {
+      "kind": "callable",
+      "signature": "(covariance: 'pd.DataFrame', budgets: 'pd.Series | Sequence[float] | None' = None) -> 'pd.Series'"
+    },
+    "portfolio.robust_mean_variance": {
+      "kind": "callable",
+      "signature": "(expected_returns: 'pd.Series', covariance: 'pd.DataFrame', *, risk_aversion: 'float' = 1.0, uncertainty_radius: 'float' = 0.0, constraints: 'Constraints | None' = None) -> 'pd.Series'"
+    },
+    "random": {
+      "kind": "namespace"
+    },
+    "rates": {
+      "kind": "namespace"
+    },
+    "rates.Calendar": {
+      "kind": "class",
+      "signature": "(name: 'str' = 'WEEKENDS', holidays: 'frozenset[date]' = <factory>, weekend: 'tuple[int, ...]' = (5, 6)) -> None"
+    },
+    "rates.CurveBuilder": {
+      "kind": "class",
+      "signature": "(*, deposits: 'pd.DataFrame | None' = None, fras: 'pd.DataFrame | None' = None, swaps: 'pd.DataFrame | None' = None, swap_frequency: 'int' = 2, interpolation: 'str' = 'log_linear', name: 'str' = 'market_curve', jacobian_bump: 'float' = 1e-06, valuation_date: 'str | pd.Timestamp | None' = None, grid_policy: 'str' = 'interpolate') -> 'None'"
+    },
+    "rates.Deposit": {
+      "kind": "class",
+      "signature": "(maturity: 'float', rate: 'float', notional: 'float' = 1.0, start: 'float' = 0.0) -> None"
+    },
+    "rates.FRA": {
+      "kind": "class",
+      "signature": "(start: 'float', end: 'float', fixed_rate: 'float', notional: 'float' = 1.0, position: 'str' = 'payer') -> None"
+    },
+    "rates.FixedRateBond": {
+      "kind": "class",
+      "signature": "(maturity: 'float', coupon_rate: 'float', face: 'float' = 100.0, frequency: 'int' = 2) -> None"
+    },
+    "rates.InterestRateSwap": {
+      "kind": "class",
+      "signature": "(maturity: 'float', fixed_rate: 'float', notional: 'float' = 1.0, start: 'float' = 0.0, fixed_frequency: 'int' = 2, float_frequency: 'int' = 2, position: 'str' = 'payer') -> None"
+    },
+    "rates.OIS": {
+      "kind": "class",
+      "signature": "(maturity: 'float', fixed_rate: 'float', notional: 'float' = 1.0, start: 'float' = 0.0, fixed_frequency: 'int' = 1, float_frequency: 'int' = 1, position: 'str' = 'payer') -> None"
+    },
+    "rates.Schedule": {
+      "kind": "class",
+      "signature": "(start: 'date | str', end: 'date | str', frequency: 'Frequency | str | int' = <Frequency.SEMIANNUAL: '6M'>, calendar: 'Calendar | str' = 'WEEKENDS', business_day: 'BusinessDayConvention | str' = <BusinessDayConvention.MODIFIED_FOLLOWING: 'modified_following'>, stub: 'StubConvention | str' = <StubConvention.SHORT_FRONT: 'short_front'>, end_of_month: 'bool' = False, payment_lag: 'int' = 0, fixing_lag: 'int' = 0, day_count: 'DayCount | str' = <DayCount.ACT_365F: 'ACT/365F'>) -> None"
+    },
+    "rates.analyze": {
+      "kind": "callable",
+      "signature": "(curve: 'Any') -> 'CurveAnalysisResult'"
+    },
+    "rates.calibrate": {
+      "kind": "callable",
+      "signature": "(model: 'str', *args: 'Any', **kwargs: 'Any')"
+    },
+    "rates.curve_risk": {
+      "kind": "callable",
+      "signature": "(instrument_or_pricer: 'Any', curve: 'DiscountCurve', *, key_maturities: 'Sequence[float] | None' = None, build_result: 'CurveBuildResult | None' = None, bump: 'float' = 0.0001) -> 'CurveRiskResult'"
+    },
+    "rates.pnl_explain": {
+      "kind": "callable",
+      "signature": "(instrument: 'Any', curve_t0: 'DiscountCurve', curve_t1: 'DiscountCurve') -> 'RatePnLExplain'"
+    },
+    "rates.year_fraction": {
+      "kind": "callable",
+      "signature": "(start: 'date | datetime | str', end: 'date | datetime | str', convention: 'str' = 'ACT/365F') -> 'float'"
+    },
+    "regimes": {
+      "kind": "namespace"
+    },
+    "regimes.volatility_regimes": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.Series', *, window: 'int' = 63, low_quantile: 'float' = 0.3333333333333333, high_quantile: 'float' = 0.6666666666666666, annualization: 'float' = 252.0) -> 'RegimeResult'"
+    },
+    "research": {
+      "kind": "namespace"
+    },
+    "research.Experiment": {
+      "kind": "class",
+      "signature": "(name: 'str', config: 'Mapping[str, Any]' = <factory>, data: 'Mapping[str, pd.Series | pd.DataFrame | DataSnapshot]' = <factory>, seed: 'int | None' = None, code_hash: 'str | None' = None, tags: 'tuple[str, ...]' = (), metadata: 'dict[str, Any]' = <factory>, created_at: 'datetime' = <factory>) -> None"
+    },
+    "research.ExperimentRegistry": {
+      "kind": "class",
+      "signature": "(path: 'str | Path' = '.asrquant-experiments.jsonl') -> 'None'"
+    },
+    "research.ResearchArtifact": {
+      "kind": "class",
+      "signature": "(name: 'str', fingerprint: 'str', depends_on: 'tuple[str, ...]' = (), metadata: 'Mapping[str, Any]' = <factory>) -> None"
+    },
+    "research.ResearchGraph": {
+      "kind": "class",
+      "signature": "() -> 'None'"
+    },
+    "research.ResearchReport": {
+      "kind": "class",
+      "signature": "(title: 'str' = 'ASRQuant Research Report', artifacts: 'list[tuple[str, Any]]' = <factory>, metadata: 'dict[str, Any]' = <factory>) -> None"
+    },
+    "risk": {
+      "kind": "namespace"
+    },
+    "risk.conditional_drawdown_at_risk": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.Series', level: 'float' = 0.95) -> 'float'"
+    },
+    "risk.covariance": {
+      "kind": "namespace"
+    },
+    "risk.drawdown_at_risk": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.Series', level: 'float' = 0.95) -> 'float'"
+    },
+    "risk.evt": {
+      "kind": "callable",
+      "signature": "(losses: 'pd.Series', *, threshold_quantile: 'float' = 0.95) -> 'EVTResult'"
+    },
+    "risk.filtered_historical_simulation": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.Series', *, level: 'float' = 0.99, decay: 'float' = 0.94, horizon: 'int' = 1) -> 'pd.Series'"
+    },
+    "risk.liquidity_adjusted_var": {
+      "kind": "callable",
+      "signature": "(var: 'float', *, liquidation_cost: 'float', portfolio_value: 'float' = 1.0) -> 'float'"
+    },
+    "risk.portfolio_risk_report": {
+      "kind": "callable",
+      "signature": "(returns: 'pd.DataFrame', weights: 'pd.Series | Iterable[float]', *, level: 'float' = 0.95, annualization: 'int' = 252) -> 'PortfolioRiskReport'"
+    },
+    "scenarios": {
+      "kind": "namespace"
+    },
+    "scenarios.flattener": {
+      "kind": "callable",
+      "signature": "(bp: 'float' = 25.0) -> 'Scenario'"
+    },
+    "scenarios.parallel_rate_shift": {
+      "kind": "callable",
+      "signature": "(bp: 'float', name: 'str | None' = None) -> 'Scenario'"
+    },
+    "scenarios.run": {
+      "kind": "callable",
+      "signature": "(scenario: 'Scenario', *, weights: 'pd.Series | Mapping[str, float] | None' = None, portfolio_value: 'float' = 1.0, instrument: 'Any | None' = None, curve: 'DiscountCurve | None' = None) -> 'ScenarioResult'"
+    },
+    "scenarios.steepener": {
+      "kind": "callable",
+      "signature": "(bp: 'float' = 25.0) -> 'Scenario'"
+    },
+    "sensitivities": {
+      "kind": "namespace"
+    },
+    "sensitivities.compute": {
+      "kind": "callable",
+      "signature": "(pricing_function: 'Callable[..., float]', parameters: 'Mapping[str, float]', *, steps: 'Mapping[str, float] | None' = None, relative_step: 'float' = 1e-05, second_order: 'bool' = True, cross: 'bool' = False) -> 'SensitivityResult'"
+    },
+    "stats": {
+      "kind": "namespace"
+    },
+    "stats.regress": {
+      "kind": "callable",
+      "signature": "(y: 'pd.Series', x: 'pd.Series | pd.DataFrame', *, method: 'str' = 'ols', **kwargs: 'Any')"
+    },
+    "stochastic": {
+      "kind": "namespace"
+    },
+    "trading": {
+      "kind": "namespace"
+    },
+    "validation": {
+      "kind": "namespace"
+    },
+    "validation.Multiverse": {
+      "kind": "class",
+      "signature": "(choices: 'Mapping[str, Sequence[Any]]', evaluator: 'Callable[..., Any]') -> 'None'"
+    },
+    "validation.StrategyValidationReport": {
+      "kind": "class",
+      "signature": "(pbo: 'PBOResult', reality: 'BootstrapMultipleTestResult', spa: 'BootstrapMultipleTestResult', alpha: 'float' = 0.05, pbo_threshold: 'float' = 0.5, metadata: 'dict[str, Any]' = <factory>) -> None"
+    },
+    "validation.combinatorial_purged_cv_splits": {
+      "kind": "callable",
+      "signature": "(n_samples: 'int', n_groups: 'int' = 6, n_test_groups: 'int' = 2, *, purge: 'int' = 0, embargo: 'int' = 0) -> 'Iterator[Split]'"
+    },
+    "validation.detect_leakage": {
+      "kind": "callable",
+      "signature": "(features: 'pd.DataFrame', target: 'pd.Series', *, exact_tolerance: 'float' = 1e-12, check_future_shifts: 'int' = 5) -> 'LeakageReport'"
+    },
+    "validation.probability_of_backtest_overfitting": {
+      "kind": "callable",
+      "signature": "(strategy_returns: 'pd.DataFrame', *, n_groups: 'int' = 8, annualization: 'float' = 252.0) -> 'PBOResult'"
+    },
+    "validation.reality_check": {
+      "kind": "callable",
+      "signature": "(strategy_returns: 'pd.DataFrame', benchmark: 'pd.Series | float' = 0.0, *, n_boot: 'int' = 1000, block_size: 'int | None' = None, random_state: 'int | None' = 0) -> 'BootstrapMultipleTestResult'"
+    },
+    "validation.spa_test": {
+      "kind": "callable",
+      "signature": "(strategy_returns: 'pd.DataFrame', benchmark: 'pd.Series | float' = 0.0, *, n_boot: 'int' = 1000, block_size: 'int | None' = None, random_state: 'int | None' = 0) -> 'BootstrapMultipleTestResult'"
+    },
+    "validation.specification_curve": {
+      "kind": "callable",
+      "signature": "(choices: 'Mapping[str, Sequence[Any]]', evaluator: 'Callable[..., Any]', *, metric: 'str' = 'metric', threshold: 'float' = 0.0) -> 'MultiverseResult'"
+    },
+    "validation.strategy_report": {
+      "kind": "callable",
+      "signature": "(strategy_returns: 'pd.DataFrame', *, benchmark: 'pd.Series | float' = 0.0, n_groups: 'int' = 8, n_boot: 'int' = 1000, block_size: 'int | None' = None, random_state: 'int | None' = 0, alpha: 'float' = 0.05, pbo_threshold: 'float' = 0.5) -> 'StrategyValidationReport'"
+    },
+    "vol": {
+      "kind": "namespace"
+    }
+  }
+}

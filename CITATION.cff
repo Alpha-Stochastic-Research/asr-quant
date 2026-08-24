@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this ASRQuant release candidate in research or validation, please cite the software artifact."
+title: "ASRQuant: Quantitative Research Infrastructure from Hypothesis Discovery to Backtesting"
+type: software
+authors:
+  - family-names: "TOURE"
+    given-names: "Alpha Kabinet"
+  - name: "Alpha Stochastic Research"
+version: 1.3.0rc1
+license: MIT
+repository-code: "https://github.com/Alpha-Stochastic-Research/asr-quant"
+url: "https://www.asr-lab.online"
+keywords:
+  - scientific literature
+  - economic hypotheses
+  - algorithmic trading
+  - paper trading
+  - quantitative finance
+  - stochastic processes
+  - Monte Carlo
+  - derivatives
+  - econometrics
+  - machine learning
+  - backtesting
+  - visualization
+  - implementation risk
+  - reproducibility
