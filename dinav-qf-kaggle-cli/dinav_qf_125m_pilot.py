@@ -11,7 +11,11 @@ import zipfile
 
 import requests
 
-BUNDLE_URL = 'https://raw.githubusercontent.com/Alpha-Stochastic-Research/asr-quant/dinav-qf-kaggle-bootstrap/dinav-qf-bootstrap/dinav_qf_zero_cost_v3_fixed.b64'
+CHUNK_URLS = [
+    f'https://raw.githubusercontent.com/Alpha-Stochastic-Research/asr-quant/dinav-qf-kaggle-bootstrap/dinav-qf-bootstrap/chunk_{i:02d}.b64'
+    for i in range(7)
+]
+EXPECTED_CHUNK_LENGTHS = [8000, 8000, 8000, 8000, 8000, 8000, 1456]
 EXPECTED_B64_LENGTH = 49456
 EXPECTED_SHA256 = 'a6a80972ac5eb8ece2a4da5effaf77a11d2076466ef7de9bb1578531b4a864e6'
 WORK = Path('/kaggle/working')
@@ -44,31 +48,51 @@ try:
 except Exception as exc:
     print('TORCH_INFO_ERROR', repr(exc), flush=True)
 
-resp = requests.get(BUNDLE_URL, timeout=60)
-resp.raise_for_status()
-text = resp.text.strip()
-print('B64_LENGTH', len(text), flush=True)
-if len(text) != EXPECTED_B64_LENGTH:
-    raise RuntimeError(f'Unexpected base64 length: {len(text)} != {EXPECTED_B64_LENGTH}')
+try:
+    parts = []
+    for index, (url, expected_length) in enumerate(zip(CHUNK_URLS, EXPECTED_CHUNK_LENGTHS)):
+        response = requests.get(url, timeout=60)
+        response.raise_for_status()
+        part = response.text.strip()
+        print('CHUNK', index, 'LENGTH', len(part), flush=True)
+        if len(part) != expected_length:
+            raise RuntimeError(f'Chunk {index} length mismatch: {len(part)} != {expected_length}')
+        parts.append(part)
 
-blob = base64.b64decode(text)
-sha = hashlib.sha256(blob).hexdigest()
-print('BUNDLE_SHA256', sha, flush=True)
-if sha != EXPECTED_SHA256:
-    raise RuntimeError(f'Bundle SHA mismatch: {sha} != {EXPECTED_SHA256}')
+    text = ''.join(parts)
+    print('B64_LENGTH', len(text), flush=True)
+    if len(text) != EXPECTED_B64_LENGTH:
+        raise RuntimeError(f'Unexpected base64 length: {len(text)} != {EXPECTED_B64_LENGTH}')
 
-ZIP_PATH.write_bytes(blob)
-if not zipfile.is_zipfile(ZIP_PATH):
-    raise RuntimeError('Decoded bundle is not a valid ZIP')
+    blob = base64.b64decode(text, validate=True)
+    sha = hashlib.sha256(blob).hexdigest()
+    print('BUNDLE_SHA256', sha, flush=True)
+    if sha != EXPECTED_SHA256:
+        raise RuntimeError(f'Bundle SHA mismatch: {sha} != {EXPECTED_SHA256}')
 
-if ROOT.exists():
-    shutil.rmtree(ROOT)
-with zipfile.ZipFile(ZIP_PATH) as zf:
-    zf.extractall(WORK)
+    ZIP_PATH.write_bytes(blob)
+    if not zipfile.is_zipfile(ZIP_PATH):
+        raise RuntimeError('Decoded bundle is not a valid ZIP')
 
-pilot = ROOT / 'zero_cost' / 'pilot.py'
-if not pilot.exists():
-    raise FileNotFoundError(pilot)
+    if ROOT.exists():
+        shutil.rmtree(ROOT)
+    with zipfile.ZipFile(ZIP_PATH) as zf:
+        bad_member = zf.testzip()
+        if bad_member is not None:
+            raise RuntimeError(f'ZIP integrity failure at {bad_member}')
+        zf.extractall(WORK)
+
+    pilot = ROOT / 'zero_cost' / 'pilot.py'
+    if not pilot.exists():
+        raise FileNotFoundError(pilot)
+except Exception as exc:
+    write_status(
+        status='BOOTSTRAP_FAILED',
+        error_type=type(exc).__name__,
+        error_message=str(exc),
+        completed_at_unix=time.time(),
+    )
+    raise
 
 print('BUNDLE_READY', ROOT, flush=True)
 write_status(status='RUNNING', bundle_sha256=sha, started_at_unix=time.time())
