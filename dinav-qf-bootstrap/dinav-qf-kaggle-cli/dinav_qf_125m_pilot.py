@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = 'https://raw.githubusercontent.com/Alpha-Stochastic-Research/asr-quant/71b52097f9bfb3c923deab7b3a441c161fc33f3f/dinav-qf-kaggle-cli/dinav_qf_125m_pilot.py'
+BASE_URL = 'https://raw.githubusercontent.com/Alpha-Stochastic-Research/asr-quant/1c85a3386ce4cd826d3302d085e5aa76ad985b9d/dinav-qf-kaggle-cli/dinav_qf_125m_pilot.py'
 response = requests.get(BASE_URL, timeout=60)
 response.raise_for_status()
 code = compile(response.text, BASE_URL, 'exec')
