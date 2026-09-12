@@ -1,0 +1,15 @@
+{
+  "id": "alphatoure/dinav-qf-125m-quality-v1",
+  "title": "DINAV-QF 125M Quality V1",
+  "code_file": "dinav_qf_125m_quality.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_internet": "true",
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": ["alphatoure/dinav-qf-125m-pilot-cli/6"],
+  "model_sources": []
+}
