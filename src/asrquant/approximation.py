@@ -8,12 +8,6 @@ import warnings
 import numpy as np
 import pandas as pd
 from scipy.interpolate import CubicSpline, RBFInterpolator, RegularGridInterpolator, interp1d
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import ConstantKernel, RBF, WhiteKernel
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
 
 from .surfaces import SurfaceResult
 
@@ -157,16 +151,31 @@ def gaussian_process(
     normalize_y: bool = True,
     random_state: int | None = 0,
 ) -> ApproximationResult:
-    """Gaussian-process surrogate with predictive mean and standard deviation."""
+    """Gaussian-process surrogate with fixed observation noise and uncertainty.
+
+    ``noise`` is the observation-noise level requested by the caller. It is held
+    fixed while the remaining kernel hyperparameters are optimized; metadata
+    reports the value actually in force.
+    """
+    if noise <= 0:
+        raise ValueError("noise must be positive")
+    from sklearn.gaussian_process import GaussianProcessRegressor
+    from sklearn.gaussian_process.kernels import ConstantKernel, RBF, WhiteKernel
+    from sklearn.preprocessing import StandardScaler
+
     xx, yy = _xy(x, y)
     scaler = StandardScaler().fit(xx)
     scaled = scaler.transform(xx)
-    kernel = ConstantKernel(1.0, (1e-6, 1e6)) * RBF(length_scale=length_scale) + WhiteKernel(noise_level=noise)
+    kernel = (
+        ConstantKernel(1.0, (1e-6, 1e6)) * RBF(length_scale=length_scale)
+        + WhiteKernel(noise_level=noise, noise_level_bounds="fixed")
+    )
     model = GaussianProcessRegressor(kernel=kernel, normalize_y=normalize_y, random_state=random_state)
     model.fit(scaled, yy)
+    fitted_noise = float(model.kernel_.k2.noise_level)
     return ApproximationResult(
         {"scaler": scaler, "regressor": model}, "gaussian_process", xx.shape[1], xx.min(axis=0), xx.max(axis=0),
-        {"kernel": str(model.kernel_), "noise": noise, "standardized_inputs": True},
+        {"kernel": str(model.kernel_), "noise": fitted_noise, "standardized_inputs": True},
         lambda q: model.predict(scaler.transform(q)),
         lambda q: model.predict(scaler.transform(q), return_std=True),
     )
@@ -181,6 +190,10 @@ def response_regression(
     alpha: float = 1.0,
 ) -> ApproximationResult:
     """Linear, polynomial, ridge, or lasso response-surface regression."""
+    from sklearn.linear_model import Lasso, LinearRegression, Ridge
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+
     xx, yy = _xy(x, y)
     key = method.lower().replace("-", "_")
     if key == "linear":
@@ -201,6 +214,8 @@ def response_regression(
 
 def regression_metrics(actual: Any, predicted: Any) -> pd.Series:
     """RMSE, MAE, and R-squared for model validation."""
+    from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
     y = np.asarray(actual, dtype=float).reshape(-1)
     p = np.asarray(predicted, dtype=float).reshape(-1)
     if y.size != p.size or y.size == 0:
