@@ -6,15 +6,6 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from sklearn.base import clone
-from sklearn.metrics import (
-    accuracy_score,
-    log_loss,
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score,
-    roc_auc_score,
-)
 
 from .validation import walk_forward_splits
 
@@ -50,15 +41,15 @@ class WalkForwardMLResult:
         }
 
     def plot(self, kind: str = "predictions"):
-        from .viz import ml
+        from .viz import ml as viz_ml
         if kind == "predictions":
-            return ml.prediction_path(self.actual, self.predictions)
+            return viz_ml.prediction_path(self.actual, self.predictions)
         if kind == "residuals":
-            return ml.residuals(self.actual, self.predictions)
+            return viz_ml.residuals(self.actual, self.predictions)
         if kind == "roc":
             if self.probabilities is None:
                 raise ValueError("probabilities are unavailable for this model")
-            return ml.roc(self.actual, self.probabilities)
+            return viz_ml.roc(self.actual, self.probabilities)
         raise ValueError("kind must be predictions, residuals, or roc")
 
 
@@ -91,8 +82,36 @@ def lag_features(
     return pd.concat(pieces, axis=1)
 
 
+def _wilder_rsi(prices: pd.Series, period: int = 14) -> pd.Series:
+    """Wilder's RSI using an SMA seed followed by recursive smoothing."""
+    p = pd.Series(prices, dtype=float)
+    delta = p.diff()
+    gains = delta.clip(lower=0.0)
+    losses = -delta.clip(upper=0.0)
+    avg_gain = pd.Series(np.nan, index=p.index, dtype=float)
+    avg_loss = pd.Series(np.nan, index=p.index, dtype=float)
+    if len(p) <= period:
+        return avg_gain.rename(f"rsi_{period}")
+
+    avg_gain.iloc[period] = float(gains.iloc[1 : period + 1].mean())
+    avg_loss.iloc[period] = float(losses.iloc[1 : period + 1].mean())
+    for i in range(period + 1, len(p)):
+        avg_gain.iloc[i] = ((period - 1) * avg_gain.iloc[i - 1] + gains.iloc[i]) / period
+        avg_loss.iloc[i] = ((period - 1) * avg_loss.iloc[i - 1] + losses.iloc[i]) / period
+
+    rs = avg_gain / avg_loss.replace(0.0, np.nan)
+    rsi = 100.0 - 100.0 / (1.0 + rs)
+    rsi = rsi.where(~((avg_loss == 0.0) & (avg_gain > 0.0)), 100.0)
+    rsi = rsi.where(~((avg_loss == 0.0) & (avg_gain == 0.0)), 50.0)
+    return rsi.rename(f"rsi_{period}")
+
+
 def technical_features(prices: pd.Series, windows=(5, 20, 63)) -> pd.DataFrame:
-    """Generate compact, model-agnostic features from one price series."""
+    """Generate compact, model-agnostic features from one price series.
+
+    ``rsi_14`` follows J. Welles Wilder's original smoothing convention: a
+    14-period simple-average seed followed by the recursive 1/14 update.
+    """
     p = pd.Series(prices, dtype=float).rename("price")
     r = p.pct_change(fill_method=None)
     out = {"return_1": r, "log_return_1": np.log(p).diff()}
@@ -101,11 +120,7 @@ def technical_features(prices: pd.Series, windows=(5, 20, 63)) -> pd.DataFrame:
         out[f"volatility_{window}"] = r.rolling(window).std(ddof=1) * np.sqrt(252)
         out[f"zscore_{window}"] = (p - p.rolling(window).mean()) / p.rolling(window).std(ddof=1)
         out[f"drawdown_{window}"] = p / p.rolling(window).max() - 1.0
-    delta = p.diff()
-    gain = delta.clip(lower=0).rolling(14).mean()
-    loss = -delta.clip(upper=0).rolling(14).mean()
-    rs = gain / loss.replace(0.0, np.nan)
-    out["rsi_14"] = 100 - 100 / (1 + rs)
+    out["rsi_14"] = _wilder_rsi(p, 14)
     return pd.DataFrame(out, index=p.index)
 
 
@@ -132,8 +147,19 @@ def walk_forward_fit(
     """Fit fresh estimator clones on chronological train/test splits.
 
     ``estimator`` may be an ASRQuant model name such as ``"ridge"`` or
-    ``"random_forest"``. This keeps scikit-learn internal to ASRQuant.
+    ``"random_forest"``. Scikit-learn is imported only when this ML workflow is
+    invoked, so the base ASRQuant import stays lightweight.
     """
+    from sklearn.base import clone
+    from sklearn.metrics import (
+        accuracy_score,
+        log_loss,
+        mean_absolute_error,
+        mean_squared_error,
+        r2_score,
+        roc_auc_score,
+    )
+
     if features is None or target is None:
         raise ValueError("features and target are required")
     estimator = resolve_estimator(estimator, task=task, model_params=model_params)
