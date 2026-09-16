@@ -57,6 +57,7 @@ GROUPS: dict[str, tuple[str, ...]] = {
         "tests/test_v130_validation_data.py",
         "tests/test_v130_quant_invariants.py",
         "tests/test_v130_research_platform.py",
+        "tests/test_sw_validation_regressions.py",
     ),
     "paper": ("tests/test_paper_contract_v1.py",),
     "production": ("tests/test_production_readiness_v1.py",),
@@ -71,6 +72,7 @@ def _environment() -> dict[str, str]:
     env["OPENBLAS_NUM_THREADS"] = "1"
     env["OMP_NUM_THREADS"] = "1"
     env["MKL_NUM_THREADS"] = "1"
+    env["NUMEXPR_NUM_THREADS"] = "1"
     return env
 
 
