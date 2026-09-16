@@ -354,3 +354,11 @@ class SQLiteAuditStore:
 
 
 __all__ = ["AuditEvent", "SQLiteAuditStore"]
+
+
+# Install validated release-candidate fixes only after the core research modules
+# have been imported by the package facade.  Keeping this hook here avoids
+# import-order cycles with modules such as ``live`` that depend on this store.
+from ._release_fixes import install_release_fixes as _install_release_fixes
+_install_release_fixes()
+del _install_release_fixes
