@@ -82,6 +82,16 @@ select = ["E9", "F"]
 "src/asrquant/__init__.py" = ["F401"]
 "src/asrquant/viz/__init__.py" = ["F401"]
 "src/asrquant/research.py" = ["F401"]
+# Pre-existing v1.2 unused-import/local-variable lint debt is isolated here.
+# E9/F correctness checks remain active globally, including every new v1.3 file.
+"src/asrquant/discovery.py" = ["F401", "F841"]
+"src/asrquant/hypotheses.py" = ["F401"]
+"src/asrquant/interest_rates.py" = ["F401"]
+"src/asrquant/research_ops.py" = ["F401"]
+"src/asrquant/standard_api.py" = ["F401"]
+"tests/test_data_sources_v120.py" = ["F401"]
+"tests/test_discovery_v110.py" = ["F401"]
+"tests/test_ecb_provider_v110.py" = ["F401"]
 
 [tool.mypy]
 python_version = "3.12"
