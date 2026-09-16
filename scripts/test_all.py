@@ -21,6 +21,7 @@ GROUPS: dict[str, tuple[str, ...]] = {
         "tests/test_metrics.py",
         "tests/test_statistics.py",
         "tests/test_research_pipeline_v050.py",
+        "tests/test_release_v130.py",
     ),
     "quant": (
         "tests/test_derivatives_optimization.py",
@@ -52,6 +53,7 @@ GROUPS: dict[str, tuple[str, ...]] = {
         "tests/test_microstructure_v120.py",
         "tests/test_end_to_end_v120.py",
     ),
+    "v130": ("tests/test_release_v130.py",),
     "paper": ("tests/test_paper_contract_v1.py",),
     "production": ("tests/test_production_readiness_v1.py",),
 }
