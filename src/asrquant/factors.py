@@ -11,8 +11,6 @@ from typing import Any, Sequence
 
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 
 from .contracts import InputValidationError, ResultMixin
 from .statistics import ols
@@ -142,7 +140,11 @@ def pca(
     ``standardize=False`` is usually appropriate for returns in common units.
     Set ``standardize=True`` when columns have materially different scales and
     the intended analysis is correlation-based rather than covariance-based.
+    Scikit-learn is loaded only when PCA is actually requested.
     """
+    from sklearn.decomposition import PCA
+    from sklearn.preprocessing import StandardScaler
+
     frame = _numeric_panel(data, name="data")
     if not 1 <= int(n_components) <= min(frame.shape):
         raise InputValidationError("n_components must be between 1 and min(n_observations, n_assets)")
@@ -198,7 +200,6 @@ def exposures(
         raise InputValidationError("insufficient aligned observations for factor regressions")
     asset_names = list(assets.columns)
     factor_names = list(factors.columns)
-    # Resolve name collisions deterministically by using source frames rather than joined labels.
     common_index = assets.index.intersection(factors.index)
     a = assets.loc[common_index].dropna()
     f = factors.loc[common_index].dropna()
