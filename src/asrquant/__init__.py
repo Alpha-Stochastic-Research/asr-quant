@@ -109,18 +109,14 @@ from .interest_rates import (
     yield_curve_pca,
     zero_rate_from_discount,
 )
-from .discovery import (
-    ResearchBoard,
-    ResearchCandidate,
-    ResearchObservation,
-)
+from .discovery import ResearchBoard, ResearchCandidate, ResearchObservation
 from .research_ops import WeeklyResearchCycle, weekly_cycle, research_note_template
 from .metrics import summary_metrics
 from .statistics import autoregression_fit
 from .models import ModelFactory, models, create as create_model
 from .easy import PlotHandle, date_range, fit, frame, open_lab, read_table, report, save, series, show, visualize
-# Stable domain namespaces. 1.2 keeps the familiar one-import style while
-# making each major research area discoverable from one predictable namespace.
+
+# Stable domain namespaces.
 from . import math
 from . import data
 from . import backtest as backtesting
@@ -143,14 +139,29 @@ from . import microstructure
 from . import factors
 from . import volatility as vol
 from . import contracts
+from . import credit
+from . import scenarios
+from . import conventions
+from . import validation
+from . import selection_validation as _selection_validation
+from . import quantlib_bridge
+
+from .research_v130 import DataSnapshot, DataStore, Experiment, ExperimentRegistry, ResearchGraph, ResearchReport, fingerprint as research_fingerprint
+from .credit import HazardCurve, cds_legs, cds_par_spread, cds_cs01, jump_to_default, bootstrap_hazard_curve
+from .scenarios import Scenario, ScenarioResult, shock_discount_curve, stress_portfolio
+from .conventions import BusinessDayConvention, DayCount, Calendar, SchedulePeriod, Schedule, generate_schedule, weekend_calendar, target_calendar
+
+# Extend existing namespaces rather than replacing them, preserving 1.x imports.
+for _name in _selection_validation.__all__:
+    setattr(validation, _name, getattr(_selection_validation, _name))
+for _name in ("DataSnapshot", "DataStore", "Experiment", "ExperimentRegistry", "ResearchGraph", "ResearchReport", "research_fingerprint"):
+    setattr(research, _name, globals()[_name])
+for _name in ("BusinessDayConvention", "DayCount", "Calendar", "SchedulePeriod", "Schedule", "generate_schedule", "weekend_calendar", "target_calendar"):
+    setattr(rates, _name, globals()[_name])
+del _name
+
 from .provenance import build_manifest
-from .literature import (
-    HypothesisCandidate,
-    HypothesisRegistry,
-    LiteratureCorpus,
-    PaperDocument,
-    SourceExcerpt,
-)
+from .literature import HypothesisCandidate, HypothesisRegistry, LiteratureCorpus, PaperDocument, SourceExcerpt
 from .workflow import (
     DataPlan,
     DataRequirement,
@@ -179,17 +190,7 @@ from .trading import (
     RiskPolicy,
     paper_trade,
 )
-from .providers import (
-    AlphaVantageProvider,
-    BinanceProvider,
-    FREDProvider,
-    ECBProvider,
-    MarketDataProvider,
-    PollingFeed,
-    YahooProvider,
-    download,
-    get_provider,
-)
+from .providers import AlphaVantageProvider, BinanceProvider, FREDProvider, ECBProvider, MarketDataProvider, PollingFeed, YahooProvider, download, get_provider
 from .surfaces import SurfaceResult, evaluate_surface, evaluate_surface_animation, evaluate_parameter_surface, surface_from_dataframe
 from .monte_carlo import (
     MonteCarloResult,
@@ -243,17 +244,7 @@ from .simulation import (
     stationary_bootstrap,
     vasicek_process,
 )
-
-
-from .production import (
-    CheckLevel,
-    CheckState,
-    ReadinessCheck,
-    ProductionReadinessReport,
-    DeploymentEvidence,
-    ProductionReadinessGate,
-    DeploymentCertificate,
-)
+from .production import CheckLevel, CheckState, ReadinessCheck, ProductionReadinessReport, DeploymentEvidence, ProductionReadinessGate, DeploymentCertificate
 from .audit_store import AuditEvent, SQLiteAuditStore
 from .live import (
     BrokerEnvironment,
@@ -277,8 +268,6 @@ from .live import (
 
 from .version import __version__
 
-# Canonical 1.2 verbs are attached to the domain namespaces without removing
-# the lower-level 1.x functions used by existing notebooks.
 from .standard_api import install_namespace_contracts as _install_namespace_contracts
 _install_namespace_contracts(
     data_module=data,
@@ -291,11 +280,21 @@ _install_namespace_contracts(
 )
 del _install_namespace_contracts
 
+# Install the audited v1.3 behavioral corrections after legacy aliases exist.
+from ._release_130_fixes import install as _install_release_130_fixes
+_install_release_130_fixes(globals())
+del _install_release_130_fixes
+
 __all__ = [
     "__version__", "QuantLab", "BacktestSpec", "CostModel", "MissingDataPolicy", "PlotConfig",
     "ModelFactory", "models", "create_model", "PlotHandle", "visualize", "show", "save", "report", "fit",
     "open_lab", "frame", "series", "read_table", "date_range", "math", "stats", "portfolio", "visuals",
     "data", "backtesting", "ml", "options", "stochastic", "mc", "approx", "rates", "vol", "research", "discovery", "hypotheses", "alpha", "risk", "microstructure", "factors", "contracts", "trading",
+    "credit", "scenarios", "conventions", "validation", "quantlib_bridge",
+    "DataSnapshot", "DataStore", "Experiment", "ExperimentRegistry", "ResearchGraph", "ResearchReport", "research_fingerprint",
+    "HazardCurve", "cds_legs", "cds_par_spread", "cds_cs01", "jump_to_default", "bootstrap_hazard_curve",
+    "Scenario", "ScenarioResult", "shock_discount_curve", "stress_portfolio",
+    "BusinessDayConvention", "DayCount", "Calendar", "SchedulePeriod", "Schedule", "generate_schedule", "weekend_calendar", "target_calendar",
     "BacktestResult", "AuditResult", "run_backtest", "compare_backtests", "implementation_audit",
     "clean_prices", "simple_returns", "log_returns", "load_prices", "load_sql",
     "resample_ohlcv", "data_quality_report", "data_fingerprint", "summary_metrics", "autoregression_fit", "build_manifest",
