@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "asrquant"
-version = "1.3.0"
+version = "1.3.1"
 description = "Quantitative research infrastructure for market data, validation, fixed income, risk, portfolio construction, backtesting, and auditable research workflows."
 readme = "README.md"
 requires-python = ">=3.10"
