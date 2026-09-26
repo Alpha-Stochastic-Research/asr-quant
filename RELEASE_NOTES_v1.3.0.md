@@ -2,6 +2,8 @@
 
 ASRQuant 1.3.0 strengthens the infrastructure around quantitative research rather than replacing the 1.2 API.
 
+> **Distribution note — 26 September 2026:** the corrected production wheel is published as build `1` of the same `1.3.0` release (`asrquant-1.3.0-1-py3-none-any.whl`). The package version remains exactly `1.3.0`; the wheel build tag only identifies the corrected distribution artifact and acts as the tie-breaker against the earlier build.
+
 ## Highlights
 
 - Market conventions: calendars, business-day rules, day counts, schedules and stubs.
@@ -49,4 +51,4 @@ This release is quantitative research infrastructure. It does not claim to repla
 
 The final 1.3.0 source and distribution metadata recognize Alpha Kabinet TOURE and Srijan Mishra as software contributors, with Alpha Stochastic Research as institutional maintainer. Srijan Mishra’s recorded v1.3.0 contribution covers clean-runtime package verification, public API surface mapping, reproducibility/numerical QA, and validation-template defect discovery.
 
-The final artifact version is `1.3.0` (not an RC). Public PyPI publication should still be performed only from the exact tagged commit after hosted multi-OS/Python CI and the publication workflow are green.
+The final artifact version is `1.3.0` (not an RC). The corrected PyPI wheel is build `1` of this same release.

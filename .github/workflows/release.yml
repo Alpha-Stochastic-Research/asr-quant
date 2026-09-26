@@ -1,17 +1,17 @@
-name: Release
+name: Release ASRQuant 1.3.0 corrected build
 
 on:
   push:
     branches: [main]
     paths:
-      - RELEASE_v1.3.1_DEPLOY
+      - RELEASE_v1.3.0_BUILD1
 
 permissions:
   contents: read
 
 jobs:
   build:
-    name: Build and validate ASRQuant 1.3.1
+    name: Build and validate ASRQuant 1.3.0 build 1
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -26,69 +26,69 @@ jobs:
       - name: Install release tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build twine
+          python -m pip install build twine wheel
 
       - name: Verify version metadata
         run: |
           python - <<'PY'
-          import pathlib, re
+          import pathlib
           pyproject = pathlib.Path('pyproject.toml').read_text()
           version_py = pathlib.Path('src/asrquant/version.py').read_text()
-          assert 'version = "1.3.1"' in pyproject
-          assert '__version__ = "1.3.1"' in version_py
-          print('ASRQuant release metadata: 1.3.1')
+          assert 'version = "1.3.0"' in pyproject
+          assert '__version__ = "1.3.0"' in version_py
+          print('ASRQuant release metadata: 1.3.0')
           PY
 
-      - name: Build distributions
+      - name: Build corrected wheel
         run: |
           rm -rf dist build src/*.egg-info
-          python -m build
+          python -m build --wheel
+          python -m wheel tags --build 1 --remove dist/asrquant-1.3.0-py3-none-any.whl
+          ls -lh dist/
 
-      - name: Validate distributions
-        run: python -m twine check --strict dist/*.whl dist/*.tar.gz
+      - name: Validate corrected wheel
+        run: python -m twine check --strict dist/asrquant-1.3.0-1-py3-none-any.whl
 
-      - name: Smoke test wheel
+      - name: Smoke test corrected wheel
         run: |
           python -m venv .release-runtime
           .release-runtime/bin/python -m pip install --upgrade pip
-          .release-runtime/bin/python -m pip install dist/*.whl
-          .release-runtime/bin/python -c "import asrquant; assert asrquant.__version__ == '1.3.1'; print('ASRQuant', asrquant.__version__)"
+          .release-runtime/bin/python -m pip install dist/asrquant-1.3.0-1-py3-none-any.whl
+          .release-runtime/bin/python -c "import asrquant; assert asrquant.__version__ == '1.3.0'; print('ASRQuant', asrquant.__version__)"
           .release-runtime/bin/asrquant --version
 
-      - name: Upload distributions
+      - name: Upload corrected distribution
         uses: actions/upload-artifact@v4
         with:
-          name: asrquant-1.3.1-distributions
-          path: |
-            dist/*.whl
-            dist/*.tar.gz
+          name: asrquant-1.3.0-build1
+          path: dist/asrquant-1.3.0-1-py3-none-any.whl
           if-no-files-found: error
 
   publish-pypi:
-    name: Publish ASRQuant 1.3.1 to PyPI
+    name: Publish corrected ASRQuant 1.3.0 wheel to PyPI
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/asrquant/1.3.1/
+      url: https://pypi.org/project/asrquant/1.3.0/
     permissions:
       id-token: write
 
     steps:
-      - name: Download distributions
+      - name: Download corrected distribution
         uses: actions/download-artifact@v4
         with:
-          name: asrquant-1.3.1-distributions
+          name: asrquant-1.3.0-build1
           path: dist/
 
-      - name: Publish distributions to PyPI
+      - name: Publish corrected 1.3.0 build to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
           print-hash: true
 
   github-release:
-    name: Create GitHub Release v1.3.1
+    name: Update GitHub Release v1.3.0
     needs: [build, publish-pypi]
     runs-on: ubuntu-latest
     permissions:
@@ -98,18 +98,15 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Download distributions
+      - name: Download corrected distribution
         uses: actions/download-artifact@v4
         with:
-          name: asrquant-1.3.1-distributions
+          name: asrquant-1.3.0-build1
           path: dist/
 
-      - name: Create release and attach distributions
+      - name: Attach corrected wheel to v1.3.0 release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v1.3.1 \
-            --target "${GITHUB_SHA}" \
-            --title "ASRQuant 1.3.1" \
-            --notes-file RELEASE_NOTES_v1.3.1.md \
-            dist/*
+          gh release upload v1.3.0 dist/asrquant-1.3.0-1-py3-none-any.whl --repo "${GITHUB_REPOSITORY}"
+          gh release edit v1.3.0 --title "ASRQuant 1.3.0" --notes-file RELEASE_NOTES_v1.3.0.md --repo "${GITHUB_REPOSITORY}"
