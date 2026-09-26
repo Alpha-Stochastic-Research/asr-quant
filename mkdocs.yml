@@ -1,0 +1,109 @@
+site_name: ASRQuant Documentation
+site_description: Auditable quantitative finance research infrastructure by Alpha Stochastic Research.
+site_author: Alpha Stochastic Research
+site_url: https://alpha-stochastic-research.github.io/asr-quant/
+repo_url: https://github.com/Alpha-Stochastic-Research/asr-quant
+repo_name: Alpha-Stochastic-Research/asr-quant
+edit_uri: edit/main/docs/
+
+copyright: >-
+  Copyright &copy; 2026 Alpha Stochastic Research · Research infrastructure only · No investment advice.
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Alpha-Stochastic-Research/asr-quant
+      name: ASRQuant on GitHub
+    - icon: fontawesome/solid/globe
+      link: https://www.asr-lab.online
+      name: Alpha Stochastic Research
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quickstart: quickstart.md
+      - One-import API: one_import_api.md
+      - Data Sources: data_sources.md
+      - Research Workflow: research_workflow.md
+      - Methodology: methodology.md
+  - Quant Research:
+      - Toolkit: quant_research_toolkit.md
+      - Research Discovery: research_discovery.md
+      - Model Catalog: model_catalog.md
+      - Hypothesis Discovery: hypothesis_discovery_v120.md
+      - Validation: validation.md
+      - Monte Carlo: monte_carlo_universal.md
+      - Approximation & Sensitivities: approximation_and_sensitivities.md
+      - Parameter Surfaces: parameter_surfaces.md
+      - Algorithmic Trading: algorithmic_trading.md
+  - Fixed Income & Derivatives:
+      - Interest-rate Derivatives: interest_rate_derivatives.md
+      - Native Engine Validation: native_quantitative_engines.md
+  - Production:
+      - Deployment: deployment.md
+      - Production Readiness: production_readiness.md
+      - Live Trading: live_trading.md
+      - Operations Runbook: operations_runbook.md
+      - Regulatory Controls: regulatory_controls.md
+  - Architecture & API:
+      - Architecture: architecture_v120.md
+      - API Catalog: api_catalog.md
+      - API Consistency: api_consistency_v120.md
+      - Generated Python Reference: generated_api_reference.md
+      - Visualization Catalog: visualization_catalog.md
+  - Release 1.3:
+      - ASRQuant 1.3.0: ASRQUANT_1.3.0.md
+      - Migration 1.2 → 1.3: MIGRATION_1.2_TO_1.3.md
+      - Release Checklist: release_checklist.md
+  - Documentation Operations:
+      - GitHub Pages Deployment: GITHUB_PAGES_DEPLOYMENT.md
+  - Team:
+      - Research Operating Model: team_research_operating_model.md

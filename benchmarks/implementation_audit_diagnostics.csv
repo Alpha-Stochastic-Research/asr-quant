@@ -1,0 +1,8 @@
+,value
+n_contracts,24.0
+return_interval_low,-0.3034405100598223
+return_interval_high,-0.09160246926871085
+return_engine_sensitivity,0.21183804079111146
+sharpe_engine_sensitivity,0.2989253269192263
+drawdown_engine_sensitivity,0.10978987932797557
+conclusion_stability_index,1.0

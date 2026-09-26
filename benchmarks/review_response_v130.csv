@@ -1,0 +1,8 @@
+metric,rc_rule,final_1_3_0
+max_partition_error,0.7500,0.0000
+parallel_dv01,-15152.700,-15152.700
+sum_key_rate_dv01,-15441.509,-15152.699
+absolute_reconciliation_error,288.809,0.000592
+relative_reconciliation_error_percent,1.906,0.00000391
+psr_benchmark_0,1.0000,0.8411
+dsr_100_trials,1.0000,0.0636

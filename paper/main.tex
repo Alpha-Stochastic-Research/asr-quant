@@ -1,0 +1,566 @@
+\documentclass{asrpaper}
+\usepackage{float}
+\usepackage{url}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{dblfloatfix}
+\usepackage{placeins}
+\setlength{\emergencystretch}{2em}
+\hypersetup{
+  pdftitle={ASRQuant 1.3.0: Quantitative Research Under Real-World Constraints},
+  pdfauthor={Alpha Kabinet TOURE; Srijan Mishra},
+  pdfsubject={Quantitative research architecture, numerical validation, point-in-time data, risk and reproducible backtesting},
+  pdfkeywords={ASRQuant, quantitative finance, fixed income, model validation, point-in-time data, backtesting, reproducibility}
+}
+
+\ASRDocumentType{Research Team Paper}
+\ASRDocumentID{ASR-RT-ASRQUANT-130}
+\ASRVersion{1.3.0}
+\ASRStatus{Publication-Ready Manuscript}
+\ASRTeam{Alpha Stochastic Research --- Research Team}
+\ASRDomain{Quantitative Finance / Scientific Computing}
+\ASRPublicationDate{September 2026}
+\ASRSubtitle{Point-in-time data, market conventions, model validation, risk, portfolio construction and backtesting}
+\ASRKeywords{quantitative finance; fixed income; model validation; point-in-time data; backtesting; reproducibility}
+\ASRClassification{JEL: C15, C58, C63, G12}
+\ASRShortTitle{ASRQuant 1.3.0}
+\ASREmail{research@asr-lab.online}
+\ASRRepository{https://github.com/Alpha-Stochastic-Research/asr-quant}
+\ASRDOI{Pending Zenodo deposit}
+\ASRReproStatus{Local artifact validation PASS; external hosted gates not asserted}
+\title{ASRQuant 1.3.0: Quantitative Research Under Real-World Constraints}
+\author{Alpha Kabinet TOURE \quad Srijan Mishra}
+\ASRabstract{Quantitative research failures often arise not from a single model equation but from breaks between stages: information may enter a backtest before it was available, calibrated structures may not reproduce their market inputs, strategy selection may be evaluated without accounting for repeated trials, and implementation assumptions may become detached from the reported result. This paper evaluates ASRQuant 1.3.0 as an attempt to make those interfaces explicit within one reproducible quantitative-finance research architecture. The release combines point-in-time data contracts, market conventions and calibration diagnostics, quote-space and credit risk, strategy-selection diagnostics, experiment lineage and chronology-aware backtesting. Evaluation uses deterministic fixtures, fixed-seed simulations, analytical identities, round-trip tests, calibration repricing, numerical invariants and regression tests. A separate internal release-candidate review reproduced and corrected three material numerical issues: key-rate DV01 partitioning on irregular tenor grids, scale consistency in Probabilistic and Deflated Sharpe Ratios, and implied-volatility inversion at the intrinsic boundary. Re-execution of the corrected artifact on Linux x86\_64 / Python 3.13.5 produced 336 passing tests with no pytest skips and 77.36\% statement coverage across \texttt{src/asrquant}; deterministic curve and CDS fixtures reprice to numerical tolerance, and the corrected key-rate construction reconciles aggregate key-rate DV01 with parallel DV01 to approximately $3.91\times10^{-6}\%$ relative error on the review fixture. These results support software and research-process claims for the tested artifact, not investment performance or third-party model-validation independence. The principal contribution is therefore architectural: ASRQuant makes data availability, market conventions, calibration quality, model-selection risk, implementation assumptions, provenance and artifact dependencies explicit objects that can be inspected and reproduced across the research chain.}
+
+\newcommand{\pkg}{\texttt{ASRQuant}}
+\newcommand{\paperfig}[2]{%
+\begin{figure*}[!t]\centering
+\includegraphics[width=0.88\textwidth]{#1}
+\caption{#2}
+\end{figure*}}
+\newcommand{\smallnote}[1]{{\scriptsize\color{ASRMuted}#1}}
+\renewcommand{\ASRMetadataBlock}{%
+  \par\vspace{7pt}\noindent
+  \begin{minipage}{\columnwidth}
+  {\normalsize\bfseries\color{ASRBlack}Publication metadata}\par\vspace{2pt}
+  {\color{ASRRule}\rule{\linewidth}{0.4pt}}\par\vspace{3pt}
+  {\small\raggedright
+  \textbf{Version:} 1.3.0\par
+  \textbf{Repository:}\par
+  {\footnotesize\url{https://github.com/Alpha-Stochastic-Research/asr-quant}}\par
+  \textbf{DOI:} Pending Zenodo deposit\par
+  }
+  \end{minipage}\par\vspace{4pt}%
+}
+
+\begin{document}
+\ASRMakeTitle
+\section{Introduction}
+\subsection{Motivation and Problem}
+Quantitative research is often fragmented across tools that solve individual tasks well but leave the researcher responsible for preserving the links between them. A data series may describe period $t$ yet only become available at $t+1$; a curve can calibrate numerically while failing to reproduce its input quotes; a strategy can look strong after selection from many trials; a portfolio can appear robust before costs, capacity, or scenario sensitivity are considered; and a backtest can become difficult to reproduce once its data, seed, configuration, and implementation assumptions are separated from the result.
+
+\pkg\ treats this fragmentation as a research-architecture problem. The goal is not to replace specialized market-data systems, pricing libraries, execution platforms, or institutional governance. The goal is to provide a coherent layer in which research inputs, hypotheses, market conventions, quantitative methods, validation evidence, decisions, and artifacts can be inspected together.
+
+Version 1.3.0 extends the 1.2 canonical API without replacing it. The release concentrates on infrastructure: market conventions and schedules, curve diagnostics and quote-space risk, credit foundations, scenario analysis, point-in-time data, strategy-selection diagnostics, experiment lineage, reproducible reports, extensible adapters, and stronger public-API compatibility controls.
+
+\subsection{Research Question}
+The central question is:
+\begin{quote}\itshape
+Can a unified quantitative-finance platform connect hypothesis discovery to market infrastructure, model validation, portfolio decisions, and backtesting while preserving chronology, provenance, and implementation semantics?
+\end{quote}
+
+The evaluation therefore asks whether the platform can: (i) distinguish what a datum describes from when it became usable; (ii) calibrate and diagnose market structures rather than merely return an optimizer status; (iii) expose model and strategy-selection risk; (iv) retain reproducible experiment and artifact lineage; and (v) preserve earlier public interfaces while adding these controls.
+
+
+\begin{table*}[!t]
+\centering
+\caption{Mapping from the five research-question criteria to operational tests and manuscript evidence.}
+\label{tab:criteria-evidence}
+\small
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{6pt}
+\begin{tabularx}{0.96\textwidth}{@{}>{\raggedright\arraybackslash}p{0.08\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Criterion} & \textbf{Operational test} & \textbf{Primary evidence} \\
+\midrule
+(i) & Point-in-time chronology & Availability/revision fixtures; point-in-time timeline; chronology and leakage tests. \\
+(ii) & Calibration diagnostics & Exact curve-quote and CDS repricing; Jacobian and quote-risk checks; Figs.~5--7. \\
+(iii) & Model and selection risk & CPCV, PBO, Reality Check, SPA, PSR/DSR and multiverse tests; validation diagnostics. \\
+(iv) & Reproducible lineage & Snapshot fingerprints, experiment identifiers and artifact-dependency tests; architecture and provenance figures. \\
+(v) & Interface preservation & Stable-API, callable-signature and release-integrity checks; Sec.~9. \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Contributions}
+The 1.3.0 release contributes five connected infrastructure layers.
+\begin{enumerate}
+\item \textbf{Market infrastructure.} Calendars, business-day rules, day-count conventions, schedules, rate instruments, curve construction, quote repricing, Jacobians, quote-space risk, rate P\&L explanation, credit curves, CDS analytics, and scenarios are exposed through coherent contracts.
+\item \textbf{Research validation.} CPCV, Probability of Backtest Overfitting, White-style Reality Check, SPA, leakage diagnostics, consolidated strategy screens, and multiverse/specification analysis complement the pre-existing robustness stack \cite{white2000,hansen2005,bailey2017,lopez2018,bailey2012,steegen2016,simonsohn2020}.
+\item \textbf{Point-in-time data and provenance.} Data snapshots, fingerprints, availability/revision timestamps, cache/offline controls, experiment identifiers, and research-artifact dependency graphs make the inputs to a result addressable.
+\item \textbf{Cross-domain research engineering.} Generic calibration and first-/second-/cross-sensitivities, scenario and transaction-cost models, constrained/cost-aware and robust portfolio tools, covariance-estimator comparison, EVT and filtered-historical tail diagnostics, drawdown-at-risk, copulas, factor/Brinson attribution, volatility and structural-break regimes, model comparison, capacity diagnostics, Monte Carlo variance reduction, and adapter protocols allow specialist components to remain interoperable.
+\item \textbf{Stability controls.} Native result methods replace the prior compatibility monkey-patching, while a stable public API contract tracks 116 declared symbols, while the release signature inventory records 258 top-level public callables; validation distinguishes local evidence from hosted gates.
+\end{enumerate}
+
+\paperfig{figures_clean/figure_01_architecture.png}{ASRQuant 1.3.0 organizes the research chain around point-in-time data, discovery, market infrastructure, validation, decision, and lineage/reporting layers.}
+
+\section{Related Literature and Positioning}
+\subsection{Quantitative Methods}
+The platform composes established quantitative methods rather than claiming novelty for their underlying mathematics. Portfolio construction connects to mean--variance analysis \cite{markowitz1952}; performance evaluation requires care under serial dependence and non-normality \cite{sharpe1966,lo2002}; derivative and rate modules build on classical no-arbitrage models \cite{blackscholes1973,merton1973,vasicek1977,cir1985,heston1993}; robust covariance and time-series inference draw on standard econometric tools \cite{neweywest1987,englegranger1987,ledoitwolf2004}.
+
+The 1.3 validation layer is motivated by the risk of selecting strategies after trying many alternatives. Reality Check, SPA, Deflated Sharpe, PBO, and multiple-testing evidence motivate an explicit distinction between exploration and confirmation \cite{white2000,hansen2005,bailey2014,bailey2017,harvey2016}. The software therefore treats statistical evidence as one component of a research decision rather than as an automatic strategy approval.
+
+\subsection{Architecture Positioning}
+The differentiating object is the \emph{research chain}. ASRQuant is designed so that a team can use its own data provider, pricing engine, or cost model while retaining common experiment, validation, provenance, and reporting contracts. This reduces the incentive to force every institution onto a single infrastructure stack and makes interoperability a first-class requirement.
+The comparison below is descriptive rather than a ranking; the projects have different primary scopes.
+\begin{center}\small
+\begin{tabularx}{\columnwidth}{@{}p{.20\columnwidth}X@{}}
+\toprule
+\textbf{Project} & \textbf{Primary emphasis and relation to ASRQuant} \\
+\midrule
+QuantLib & Broad quantitative-finance modelling, pricing and risk library. ASRQuant overlaps in rates and derivatives while placing point-in-time research lineage and release-validation contracts at the centre of the workflow. \\
+OpenBB & Financial-data and research workspace/integration layer. ASRQuant overlaps in data workflows while embedding finance/statistical engines and audit-oriented research objects in the same package. \\
+vectorbt & High-performance vectorized strategy analysis and backtesting. ASRQuant overlaps in backtesting and validation while also covering market calibration, fixed-income/credit infrastructure and artifact lineage. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Data, Point-in-Time Information and Provenance}
+\subsection{Data Sources and Quality}
+The canonical data layer continues to accept pandas objects, local tabular files, public HTTP(S) tables, and provider-backed data including Yahoo Finance, ECB, FRED, Binance, and Alpha Vantage. Validation reports missingness, duplicate indices, non-finite values, constant columns, ordering, and sampling gaps without silently rewriting the input.
+
+Version 1.3 adds deterministic snapshots and a point-in-time contract. Let $t_o$ denote the observation timestamp, $t_a$ the first timestamp at which the value was available to the researcher, and $t_r$ a later revision timestamp. A valid research view at decision time $t$ may use an observation only if $t_a \leq t$. This prevents the common error of treating revised historical data as if the revised value had been known in real time.
+
+\paperfig{figures_clean/figure_03_point_in_time.png}{Point-in-time data separates observation time, availability time, and revision time. An \texttt{as\_of} view includes only information available by the decision timestamp.}
+
+\subsection{Snapshots and Experiment Identity}
+A data snapshot stores a deterministic fingerprint, source metadata, schema, creation time, and serialized representation. A local \texttt{DataStore} adds keyed caching, freshness checks, and offline replay of previously cached data. An experiment combines named configuration, data fingerprints, a seed, optional code hash, package/Python version, and environment metadata. The resulting fingerprint can be registered in an append-only local registry and used as a stable reference for downstream artifacts. \texttt{ResearchReport} can combine heterogeneous result objects into HTML, Markdown, or JSON. If an upstream artifact changes, a research graph identifies dependent artifacts that should be considered stale.
+
+\begin{lstlisting}
+snapshot = store.put("rates_panel", data, source="internal")
+experiment = asr.research.Experiment(
+    name="curve_signal",
+    config={"lookback": 60, "cost_bps": 5},
+    data={"market": data}, seed=42,
+)
+\end{lstlisting}
+
+\section{Hypothesis Discovery and Identification}
+\subsection{Evidence and Novelty}
+The hypothesis system introduced in earlier releases remains intact. Candidates can arise from data, literature, model disagreement, robustness instability, structural changes, regimes, or domain-specific observations. The core rule remains conservative: a statistically supported candidate is not automatically novel, and a corpus-relative research gap is not proof of global novelty.
+
+Evidence status and novelty status are therefore represented separately. This separation lets a candidate be out-of-sample supported yet already documented in prior work, or potentially novel while still statistically inconclusive.
+
+\paperfig{figures_clean/figure_04_hypotheses.png}{Illustrative candidate states showing statistical evidence and novelty as separate dimensions.}
+
+\subsection{Failure Conditions}
+A candidate should be weakened or rejected when its sign changes materially across reasonable specifications, its holdout evidence disappears, a chronology correction removes the effect, multiple-testing adjustment eliminates the finding, an alternative benchmark explains the result, or prior literature establishes that the purported mechanism is already known. The platform records these outcomes rather than forcing all candidates toward a positive decision.
+
+\section{Market Infrastructure}
+\subsection{Conventions, Schedules and Instruments}
+Version 1.3 adds a common conventions layer for TARGET, US federal, UK bank, and weekend-only calendars; custom holidays; business-day adjustments; day counts; stubs; frequencies; fixing/payment lags; accrual fractions; and schedules. These are not cosmetic details: they determine accrual fractions, cash-flow dates, discounting intervals, and hedge sensitivities. The high-level instrument layer covers deposits, FRAs, fixed-rate bonds, swaps, and OIS objects with explicit pricing, cash-flow, and risk methods, so that rate workflows do not rely on ad hoc date arithmetic in each notebook.
+
+\subsection{Curve Construction and Diagnostics}
+A curve build is treated as a constrained numerical object with explicit diagnostics. Given market quotes $q$ and internal curve parameters $z$, the builder retains the market quotes and returns a curve, quote-repricing errors, calibration diagnostics, and a quote-to-zero Jacobian $\partial z/\partial q$. Sparse swap maturities can use an explicit \texttt{grid\_policy=interpolate}, with synthetic coupon-grid nodes recorded in metadata, while \texttt{grid\_policy=strict} requires a completely supplied coupon grid. The test fixture used in this paper combines short deposits and par swaps. The calibrated curve reproduces the input quotes to numerical tolerance while preserving positive discount factors.
+
+\paperfig{figures_clean/figure_05_curve_builder.png}{Deterministic 1.3 curve-builder example. The displayed maximum quote-repricing error is numerical rather than economic.}
+
+\subsection{Quote-Space Risk and P\&L Explain}
+Risk is often consumed in market-quote space rather than in an arbitrary internal zero-rate grid. By the chain rule,
+\begin{equation}
+\frac{\partial V}{\partial q}=\frac{\partial V}{\partial z}\frac{\partial z}{\partial q}.
+\end{equation}
+ASRQuant exposes node risk and quote risk separately. For a par swap, the deterministic example concentrates most quote PV01 in the terminal swap quote, as expected from the calibration structure of the sparse fixture.
+
+\paperfig{figures_clean/figure_06_quote_risk.png}{Quote-space PV01 for an illustrative 5Y par swap calibrated to the deterministic market-quote set.}
+
+Rate P\&L explanation then compares instrument values under two curve states and attributes the move using the same explicit curve objects. This provides a consistent path from market inputs to valuation, sensitivities, scenarios, and subsequent review.
+
+\section{Credit, Scenarios and Cross-Domain Risk}
+\subsection{Credit Foundations}
+Version 1.3 introduces piecewise-constant hazard and survival curves together with default probabilities, CDS premium/protection-leg analytics, par spreads, CS01-style hazard sensitivity, jump-to-default diagnostics, and sequential hazard bootstrapping. For piecewise hazard rate $\lambda(t)$, survival is
+\begin{equation}
+Q(0,T)=\exp\left(-\int_0^T \lambda(u)\,du\right).
+\end{equation}
+The deterministic example bootstraps a hazard curve from 1Y, 3Y, and 5Y CDS spreads under a fixed recovery assumption. The purpose is infrastructure validation, not an empirical credit forecast.
+
+\paperfig{figures_clean/figure_07_credit.png}{Illustrative survival probabilities implied by the deterministic CDS bootstrap fixture.}
+
+\subsection{Scenario Engine}
+A common scenario object can represent parallel, slope, curvature, volatility, liquidity, or asset shocks and route them to compatible instruments or portfolios. This allows scenario assumptions to be named, stored, compared, and attached to research reports instead of remaining embedded in isolated notebook cells.
+
+\subsection{Cross-Domain Research Utilities}
+The 1.3 utility layer also includes generic calibration with residual, Jacobian, and conditioning diagnostics; first-, second-, and cross-sensitivity estimation; fixed, spread, linear-impact, and square-root-impact cost models; EVT tail modelling, filtered historical simulation, and drawdown-at-risk; Gaussian and Student-$t$ copulas; factor and Brinson attribution; volatility and structural-break regime diagnostics; model and covariance-estimator comparison; Monte Carlo variance-reduction helpers; rate P\&L explanation; signal-portfolio capacity diagnostics; and adapter protocols for data, pricing, risk, execution, cost, and optimizer components.
+
+\section{Research Validation}
+\subsection{Selection Risk and Chronology}
+A strategy that is selected from many alternatives has a different evidential status from a strategy specified before looking at the data. ASRQuant 1.3 therefore adds combinatorial purged cross-validation, PBO, Reality Check, SPA, leakage diagnostics, and consolidated strategy reports. These diagnostics complement rather than replace economic reasoning.
+
+\paperfig{figures_clean/figure_08_validation_diagnostics.png}{Deterministic synthetic example showing PBO, Reality Check, and SPA diagnostics. The values demonstrate API behavior only.}
+
+\subsection{Multiverse and Leakage Diagnostics}
+Multiverse analysis evaluates a research conclusion across multiple reasonable choices such as lookback, normalization, neutralization, cost assumptions, or model specification. Leakage diagnostics search for observable chronology violations including future shifts, unsafe train/test overlap, and transformations that use information outside the training window. Neither tool proves validity; both make fragility easier to identify before a result is promoted.
+
+\section{Portfolio, Costs and Backtesting}
+\subsection{Decision Layer}
+The existing portfolio layer remains available for minimum variance, maximum Sharpe, risk budgeting, maximum diversification, and hierarchical risk parity, with 1.3 additions for constrained/cost-aware optimization, robust mean--variance construction, risk budgeting, and covariance-estimator comparison. Fixed, spread, linear-impact, and square-root-impact transaction-cost models and scenario objects can be passed into the same decision workflow, reducing the gap between an unconstrained research optimum and an implementable allocation.
+
+\subsection{Backtest as Implementation Contract}
+The backtesting layer continues to require explicit chronology. Let $w_t$ be effective asset weights, $r_{t+1}$ next-period returns, and $C_{t+1}$ implementation cost. A minimal net return identity is
+\begin{equation}
+r^{net}_{t+1}=w_t^\top r_{t+1}-C_{t+1}.
+\end{equation}
+The important property is not the formula itself but that delay, turnover, costs, cash, borrow, and missing-data assumptions are part of the recorded implementation rather than post-hoc adjustments.
+
+\paperfig{figures_clean/figure_09_backtest.png}{Deterministic synthetic illustration showing how explicit costs change the backtest path.}
+
+\section{Experimental Design and Release Validation}
+\subsection{Validation Design}
+The paper evaluates software behavior, not a market anomaly. Tests therefore use deterministic fixtures, fixed random seeds, mocked provider responses, known pricing identities, and controlled synthetic data. Numerical controls include quote repricing, discount-factor/zero-rate round trips, par-swap zero-PV identity, CDS bootstrap repricing, Black--Scholes put--call parity, finite-difference sensitivities, positive-semidefinite covariance checks, and deterministic experiment fingerprints.
+
+The review re-execution collected 336 tests across 36 modules and completed with 336 passes and no pytest skips. Tests were run in isolated groups because plotting, solver, and numerical backends can otherwise share process state. Combining the grouped coverage data gives 77.36\% statement coverage across \texttt{src/asrquant} (13,092 statements; 2,964 missed). Coverage is reported as scope evidence rather than as a correctness score.
+
+\paperfig{figures_clean/figure_02_validation.png}{Local ASRQuant 1.3.0 validation inventory. Counts are taken from the release validation record.}
+
+\subsection{Distribution and API Controls}
+The package import sweep reports 84 package modules imported with zero failures, excluding \path{asrquant.__main__} because importing it intentionally executes the CLI. A stable API snapshot tracks 116 declared symbols, while a separate signature inventory records 258 top-level public callables; automated compatibility checks fail when a stable symbol disappears or its callable signature changes unexpectedly. Canonical result serialization is native in the final artifact. The supplied wheel and source distribution were rebuilt from the corrected source tree, and a wheel smoke installation reports version 1.3.0. The CLI and dataset-validation surfaces remain covered by the package test suite and release checks.
+
+The public repository CI defines a 12-cell compatibility matrix spanning Linux, macOS and Windows with Python 3.10--3.13, plus domain, quality, security and distribution jobs. This manuscript reports only the local Linux/Python 3.13.5 re-execution for the supplied artifact. The exact 1.3.0 public release commit must complete the hosted matrix before publication; an earlier or different commit is not treated as evidence for this artifact.
+
+
+\section{Release-Candidate Review Corrections and Numerical Integrity}
+\subsection{Why the release-candidate review matters}
+A numerical library can pass a large internal test suite and still carry a localised convention error. The final 1.3.0 release therefore treats the release-candidate review as a separate validation workstream. That workstream was led by co-author Srijan Mishra and covered numerical correctness, statistical conventions, public interfaces, reproducibility, edge cases, defect reproduction, regression protection and release-readiness evidence. It was organizationally internal to ASR, not third-party independent model validation. Separation here means that identified defects were reproduced independently from the implementation change and challenged through explicit tests; it does not imply institutional independence. A finding is incorporated only when its reproduction identifies a concrete contract, convention, numerical boundary, or dependency behaviour. Statistical estimation limits are not relabelled as software defects merely because their estimates can be noisy.
+
+\subsection{Key-rate DV01 on uneven market pillars}
+The most material rates finding concerned triangular key-rate bumps. A symmetric triangle built from the larger neighbouring spacing is harmless on uniform grids but overlaps on an irregular market pillar set. If $w_i(t)$ denotes the bump weight associated with pillar $i$, a first-order partition requires
+\begin{equation}
+\sum_i w_i(t)=1
+\end{equation}
+through the supported curve grid. The final implementation uses the actual left and right gaps separately. On the standard uneven pillar set $[0.25,0.5,1,2,3,5,7,10,15,20]$, this removes the spurious risk spillover that could otherwise make key-rate DV01s fail to reconcile with a parallel DV01. Automatic key-rate bumps now also require the selected maturity to coincide with a curve pillar; arbitrary centres remain available only when the caller supplies an explicit width.
+
+\subsection{Probabilistic and Deflated Sharpe Ratios}
+The Probabilistic Sharpe Ratio is defined on a per-observation Sharpe statistic. Feeding an annualised Sharpe into the same finite-sample formula mixes scales with the benchmark and makes the multiple-testing deflation too weak. The final implementation retains the public annualisation parameter for compatibility but computes the PSR statistic from the per-observation Sharpe. DSR then compares like with like. This correction is especially important because the result is a probability-like quantity: a scale error can look plausible rather than fail loudly.
+
+\subsection{Non-identifiable implied volatility}
+When a Black-style option quote lies at the discounted intrinsic boundary, floating-point arithmetic can make the objective exactly zero at the solver's lower volatility bracket. Returning that lower bracket creates a false impression of a successful calibration. The final implementation explicitly evaluates the bracket boundary and refuses the inversion when the quote is at the non-identifiable boundary. Interior quotes still use bracketed root finding and preserve the existing round-trip behavior.
+
+\subsection{Stable PCA orientation, statistics compatibility and explicit conventions}
+Principal-component eigenvectors are defined only up to sign. The final yield-curve PCA orients each component using its largest absolute loading, preventing arbitrary sign inversions from contaminating rolling factor interpretation while leaving reconstruction unchanged. Removed statsmodels 0.15 keywords are no longer passed to AutoReg or Granger-causality functions. RSI-14 now defaults to Wilder smoothing, while the alternate simple-moving-average convention remains explicitly selectable. Gaussian-process observation noise is fixed when supplied by the user and the requested and fitted values are both reported. Vasicek calibration now reports standard errors for the AR(1) coefficient and the implied mean-reversion speed, making the well-known short-sample uncertainty visible rather than pretending that calendar-span limitations can be solved by denser sampling.
+
+\subsection{Dependency architecture}
+The final core installation is smaller than the RC dependency surface. Matplotlib/Plotly/Jinja2, scikit-learn, requests, and pypdf are behind explicit extras and are imported only when their capabilities are invoked. A fresh \texttt{import asrquant} therefore does not itself load Matplotlib, requests, or scikit-learn. The purpose is not merely import speed: regulated, offline, or minimal environments can audit a smaller dependency graph and add specialised stacks intentionally.
+
+
+\subsection{Before/after numerical evidence}
+Table~\ref{tab:before-after} reconstructs the two scale-sensitive release-candidate behaviours using deterministic review fixtures. For key-rate risk, the RC rule uses the larger adjacent spacing for both sides of each triangular bump; the final rule uses the actual left and right spacings. For PSR/DSR, the RC calculation inserts an annualized Sharpe into a per-observation finite-sample statistic; the final implementation keeps the statistic and benchmark on the same scale. Signed DV01 values depend on payer/receiver convention, so reconciliation is assessed by the difference between parallel DV01 and the sum of key-rate DV01s.
+
+\begin{table}[H]
+\centering
+\caption{Deterministic before/after numerical evidence used in the release-candidate review.}
+\label{tab:before-after}
+\scriptsize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\columnwidth}{@{}Xrr@{}}
+\toprule
+\textbf{Metric} & \textbf{RC rule} & \textbf{Final 1.3.0} \\
+\midrule
+Max. $|\sum_i w_i-1|$ on uneven grid & 0.7500 & 0.0000 \\
+Parallel DV01 (currency/bp) & -15,152.700 & -15,152.700 \\
+Sum key-rate DV01 (currency/bp) & -15,441.509 & -15,152.699 \\
+$|\sum KR-DV01|$ (currency/bp) & 288.809 & $5.92\times10^{-4}$ \\
+Relative KR reconciliation error & 1.906\% & $3.91\times10^{-6}$\% \\
+PSR, benchmark 0 & 1.0000 & 0.8411 \\
+DSR, 100 trials & 1.0000 & 0.0636 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+The PSR/DSR row uses a fixed 252-observation synthetic series with per-observation Sharpe 0.0632 and annualized Sharpe 1.0034; it is intentionally chosen to expose the scale error rather than produce a saturated post-fix probability.
+
+\section{Native Quantitative Engines and Numerical Independence}
+ASRQuant keeps its finance-specific model implementations inside the package rather than delegating pricing, curve construction, rate risk, calibration or derivative analytics to an external quantitative-finance engine. This design makes model equations, conventions and numerical boundaries inspectable in the same source tree as the research workflow that uses them.
+
+Independence does not mean avoiding the scientific Python ecosystem. NumPy, SciPy, pandas and statsmodels provide general numerical, array, data and econometric primitives where appropriate. The distinction is that these libraries do not substitute a separate finance-pricing engine for ASRQuant's own instrument and risk logic.
+
+Validation therefore emphasizes model-specific mathematical contracts. European option routines are checked by put--call parity, implied-volatility round trips and an independently coded Black--Scholes formula; curve and rate-risk routines are checked by repricing and partition identities where applicable; stochastic and statistical routines are checked against known moments, invariants, deterministic seeds, limiting cases and regression fixtures.
+
+\begin{center}\scriptsize
+\begin{tabularx}{\columnwidth}{@{}p{.28\columnwidth}p{.24\columnwidth}X@{}}
+\toprule
+\textbf{Control} & \textbf{Observed error} & \textbf{Evidence} \\
+\midrule
+Black--Scholes closed form & $1.421\times10^{-14}$ max abs. & Three independently coded formula comparisons. \\
+CRR, 1000 steps & 0.00199947 max abs. & Convergence to Black--Scholes; tolerance 0.01. \\
+Curve quote bootstrap & $2.01\times10^{-12}$ bp max & Deterministic deposit/swap fixture; curve figure. \\
+CDS bootstrap & $8.11\times10^{-10}$ bp max & 1Y/3Y/5Y CDS fixture; credit figure. \\
+External QuantLib / ISDA & not claimed & No SW-007 reference output is present in the supplied artifact or public default branch. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+The absence of SW-007 evidence is stated explicitly rather than replaced with inferred QuantLib or ISDA numbers. Such external reference comparisons can be appended when the exact result file and environment are supplied. The release-candidate review complements those contracts by reproducing edge cases and challenging conventions at the API boundary.
+
+The design target is a self-contained quantitative research platform whose finance-specific behavior can be inspected, tested and extended directly in ASRQuant. Claims of correctness are tied to explicit numerical contracts and observed test evidence rather than to agreement with an external finance library.
+
+\section{Results}
+\subsection{Primary Result}
+The main result is architectural rather than predictive. ASRQuant 1.3.0 can represent a continuous research path from point-in-time inputs and hypothesis candidates through market calibration, validation, scenarios, portfolio decisions, and auditable backtesting while recording the provenance and dependencies of intermediate artifacts.
+
+\begin{asrclaim}[LOCAL RELEASE EVIDENCE]{01}
+On Linux x86\_64 / Python 3.13.5, all defined local release gates for the corrected artifact passed, including the 336-test suite, import/API/release checks and wheel smoke import. The grouped test re-execution recorded no pytest skips and 77.36\% source statement coverage. These are software-validation results, not evidence of investment performance.
+\end{asrclaim}
+
+Local validation supports the corrected final artifact in the tested environment: 336 tests pass across 36 test modules; 84 package modules import without failure; the stable API contract covers 116 declared symbols and the signature inventory covers 258 top-level callables; the public-API and release-version checks pass; and the rebuilt wheel smoke installation reports version 1.3.0.
+
+\subsection{Interpretation}
+The release should therefore be read as a strengthening of quantitative research infrastructure. It does not establish that every model or strategy produced with the package is correct. Instead, it makes more of the assumptions that determine correctness visible: when data were available, what market conventions were used, whether calibration reproduced market quotes, how quote risk propagates, how many strategy alternatives were considered, whether chronology was violated, and which artifacts depend on which inputs.
+
+\section{Robustness, Limitations and Implementation Boundaries}
+\subsection{Robustness Controls}
+The 1.3 tests exercise both normal and failure paths, including sparse/complete curve grids, randomized option parity, credit repricing, multiverse execution, point-in-time revisions, portfolio constraints, cost positivity, Monte Carlo variance reduction, regime diagnostics, and artifact-lineage propagation. API compatibility and distribution-install checks protect a different failure mode: a mathematically correct implementation that is difficult to install or unexpectedly breaks existing notebooks.
+
+\subsection{Limitations}
+The release is not a replacement for venue-specific holiday databases, institutional entitlements, a complete credit/XVA stack, exchange execution infrastructure, or independent model-validation governance. The point-in-time contract can only be as reliable as the availability metadata supplied to it. Multiple-testing diagnostics depend on the candidate set presented to the test. Curve and credit examples in this manuscript are simplified deterministic fixtures. Scenario and cost models are modelling assumptions, not observed future execution conditions. Guarded live-broker components remain separate from software-release status and are designed to fail closed.
+
+The current local evidence is platform-specific: Linux x86\_64 and Python 3.13.5. Cross-platform package publication should therefore preserve the hosted compatibility matrix as a separate release gate; the manuscript does not report that gate as locally observed.
+
+\section{Economic and Research Implications}
+For a researcher, the practical benefit is fewer silent translations between stages. For a quantitative team, the adapter layer means internal providers, pricers, or desk cost models can be registered without abandoning the common research workflow. For review, fingerprints and lineage make it easier to answer which data, configuration, code version, and seed generated an artifact. For model governance, diagnostics create explicit places to record inconclusive, unstable, or failed results rather than forcing every workflow into a successful numeric output.
+
+The intended standard is therefore not feature count. A capability belongs in the platform when it improves correctness, traceability, validation, interoperability, or decision relevance without weakening the stable public API.
+
+\section{Conclusion}
+ASRQuant 1.3.0 extends the platform from a broad quantitative toolkit toward a more integrated research infrastructure. The release strengthens the bridge between hypothesis discovery and backtesting with point-in-time data, market conventions, curve diagnostics, quote-space risk, credit foundations, scenarios, advanced strategy validation, experiment fingerprints, lineage, and cross-domain reports.
+
+The local release evidence supports a precise conclusion: the corrected 1.3.0 artifact passes the defined local validation in the tested environment, with 336 passing tests, 84 package-module imports, 116 stable API symbols, 258 recorded top-level callable signatures, a passing public-API check, a passing release-version check, and a successful wheel smoke import. These results do not by themselves establish behavior on untested operating systems, Python versions, brokers or external data services.
+
+The broader contribution is architectural. Quantitative research becomes easier to challenge when data availability, model conventions, selection risk, implementation costs, and artifact dependencies are represented as explicit objects rather than implicit notebook knowledge. That is the design direction of ASRQuant 1.3.0.
+
+\ASRBlockHeading{Data and code availability}
+{\small The complete ASRQuant 1.3.0 source artifact accompanying this manuscript contains the source package, tests, examples, documentation, release metadata, wheel and source distribution. The project is MIT licensed. Figures use deterministic repository fixtures or fixed-seed synthetic data; no live market feed is required to reproduce the software-validation evidence reported here. Public registry publication is a separate release action.}
+
+\ASRBlockHeading{Reproducibility statement}
+{\small The reported local evidence is tied to the corrected 1.3.0 artifact and a Linux x86\_64 / Python 3.13.5 environment. The release record reports 336 passing tests across 36 modules, 84 package modules imported with zero failures, a passing public-API compatibility check, a passing release-version check and a successful wheel smoke import. Hosted multi-OS, registry and external-service checks are not presented as observed results in this manuscript.}
+
+\ASRBlockHeading{Author contributions}
+{\small \textbf{Alpha Kabinet TOURE}: conceptualization, overall software architecture, core implementation, methodology, release integration, visualization, project administration, writing--original draft, and manuscript preparation. \textbf{Srijan Mishra}: lead release-candidate validation and benchmarking; design and execution of the validation methodology; numerical, statistical, interface and public-API review; reproducibility methodology and review; defect identification, reproduction, triage and verification; regression-test design and review; benchmark construction and interpretation; robustness, boundary-condition and edge-case assessment; review of corrective implementations; validation evidence and release-readiness assessment; interpretation of validation results; substantive scientific review of the manuscript; co-writing of the Validation Methodology, Experimental Setup/Benchmarking, Results, Discussion and Limitations material; and writing--review and editing.}
+
+\ASRBlockHeading{Funding}
+{\small No external funding was declared for this manuscript.}
+
+\ASRBlockHeading{Competing interests}
+{\small Alpha Kabinet TOURE is a co-founder of Alpha Stochastic Research, the organization that develops and publishes ASRQuant. This relationship is disclosed because the manuscript evaluates an ASR software artifact. Srijan Mishra led the internal release-candidate validation and benchmarking workstream and contributed to scientific review and manuscript development. No additional competing interests are declared.}
+
+\ASRBlockHeading{Artificial-intelligence use disclosure}
+{\small Artificial-intelligence tools were used solely to assist with the final drafting and editorial polishing of this document.}
+
+\ASRBlockHeading{Acknowledgements}
+{\small The authors acknowledge ASR contributors and the scientific Python ecosystem used by the project. Release-candidate validation submissions materially informed the numerical, compatibility and packaging corrections documented in this paper.}
+
+\ASRMetadataBlock
+
+\balance
+\begin{thebibliography}{99}\small
+\bibitem{bailey2014} D. H. Bailey and M. L\'opez de Prado. The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality. \emph{Journal of Portfolio Management}, 40(5):94--107, 2014. doi:10.3905/jpm.2014.40.5.094.
+\bibitem{bailey2017} D. H. Bailey, J. M. Borwein, M. L\'opez de Prado, and Q. J. Zhu. The Probability of Backtest Overfitting. \emph{Journal of Computational Finance}, 20(4):39--69, 2017. doi:10.21314/JCF.2016.322.
+\bibitem{bailey2012} D. H. Bailey and M. L\'opez de Prado. The Sharpe Ratio Efficient Frontier. \emph{Journal of Risk}, 15(2):3--44, 2012.
+\bibitem{lopez2018} M. L\'opez de Prado. \emph{Advances in Financial Machine Learning}. Wiley, 2018.
+\bibitem{steegen2016} S. Steegen, F. Tuerlinckx, A. Gelman, and W. Vanpaemel. Increasing Transparency Through a Multiverse Analysis. \emph{Perspectives on Psychological Science}, 11(5):702--712, 2016. doi:10.1177/1745691616658637.
+\bibitem{simonsohn2020} U. Simonsohn, J. P. Simmons, and L. D. Nelson. Specification Curve Analysis. \emph{Nature Human Behaviour}, 4:1208--1214, 2020. doi:10.1038/s41562-020-0912-z.
+\bibitem{blackscholes1973} F. Black and M. Scholes. The Pricing of Options and Corporate Liabilities. \emph{Journal of Political Economy}, 81(3):637--654, 1973. doi:10.1086/260062.
+\bibitem{cir1985} J. C. Cox, J. E. Ingersoll Jr., and S. A. Ross. A Theory of the Term Structure of Interest Rates. \emph{Econometrica}, 53(2):385--407, 1985. doi:10.2307/1911242.
+\bibitem{englegranger1987} R. F. Engle and C. W. J. Granger. Co-integration and Error Correction: Representation, Estimation, and Testing. \emph{Econometrica}, 55(2):251--276, 1987. doi:10.2307/1913236.
+\bibitem{hansen2005} P. R. Hansen. A Test for Superior Predictive Ability. \emph{Journal of Business \& Economic Statistics}, 23(4):365--380, 2005. doi:10.1198/073500105000000063.
+\bibitem{harvey2016} C. R. Harvey, Y. Liu, and H. Zhu. ... and the Cross-Section of Expected Returns. \emph{Review of Financial Studies}, 29(1):5--68, 2016. doi:10.1093/rfs/hhv059.
+\bibitem{heston1993} S. L. Heston. A Closed-Form Solution for Options with Stochastic Volatility with Applications to Bond and Currency Options. \emph{Review of Financial Studies}, 6(2):327--343, 1993. doi:10.1093/rfs/6.2.327.
+\bibitem{ledoitwolf2004} O. Ledoit and M. Wolf. A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices. \emph{Journal of Multivariate Analysis}, 88(2):365--411, 2004. doi:10.1016/S0047-259X(03)00096-4.
+\bibitem{lo2002} A. W. Lo. The Statistics of Sharpe Ratios. \emph{Financial Analysts Journal}, 58(4):36--52, 2002. doi:10.2469/faj.v58.n4.2453.
+\bibitem{markowitz1952} H. Markowitz. Portfolio Selection. \emph{Journal of Finance}, 7(1):77--91, 1952. doi:10.1111/j.1540-6261.1952.tb01525.x.
+\bibitem{merton1973} R. C. Merton. Theory of Rational Option Pricing. \emph{Bell Journal of Economics and Management Science}, 4(1):141--183, 1973. doi:10.2307/3003143.
+\bibitem{neweywest1987} W. K. Newey and K. D. West. A Simple, Positive Semi-Definite, Heteroskedasticity and Autocorrelation Consistent Covariance Matrix. \emph{Econometrica}, 55(3):703--708, 1987. doi:10.2307/1913610.
+\bibitem{sharpe1966} W. F. Sharpe. Mutual Fund Performance. \emph{Journal of Business}, 39(S1):119--138, 1966. doi:10.1086/294846.
+\bibitem{vasicek1977} O. Vasicek. An Equilibrium Characterization of the Term Structure. \emph{Journal of Financial Economics}, 5(2):177--188, 1977. doi:10.1016/0304-405X(77)90016-2.
+\bibitem{white2000} H. White. A Reality Check for Data Snooping. \emph{Econometrica}, 68(5):1097--1126, 2000. doi:10.1111/1468-0262.00152.
+\end{thebibliography}
+
+\ASRBlockHeading{Disclosure and disclaimer}
+{\small Alpha Stochastic Research publications are produced for scientific and educational purposes. This paper documents software and research methodology; it does not constitute investment advice, an offer, solicitation or recommendation to transact in any financial instrument.}
+\clearpage\onecolumn\appendix
+\section{Mathematical and Implementation Identities}
+\subsection{Quote-space sensitivity}
+If an instrument value $V$ depends on internal curve nodes $z$ and those nodes depend on market quotes $q$, first-order quote sensitivity is
+\begin{equation}
+\nabla_qV=(\nabla_zV)\,\frac{\partial z}{\partial q}.
+\end{equation}
+The distinction matters because a portfolio is usually hedged and reported against traded quotes rather than an arbitrary interpolation grid.
+
+\subsection{Credit survival}
+For piecewise-constant hazard rate $\lambda_k$ on intervals $(t_{k-1},t_k]$,
+\begin{equation}
+Q(0,T)=\exp\left(-\sum_k \lambda_k\Delta t_k\right),
+\end{equation}
+with intervals truncated at $T$. The bootstrap chooses hazard segments so the CDS premium and protection legs reproduce the supplied market spreads under the stated recovery convention.
+
+\subsection{Backtest net-return identity}
+With effective risky weights $w_t$, next-period asset returns $r_{t+1}$, residual cash return $r^f_{t+1}$, and implementation cost $C_{t+1}$,
+\begin{equation}
+r^{net}_{p,t+1}=w_t^\top r_{t+1}+\left(1-\mathbf{1}^\top w_t\right)r^f_{t+1}-C_{t+1}.
+\end{equation}
+This identity makes residual cash and explicit implementation cost part of the recorded backtest contract.
+
+\section{Canonical API Map}
+\begin{center}\fontsize{8.3}{9.7}\selectfont
+\begin{tabularx}{\linewidth}{@{}p{.29\linewidth}X@{}}
+\toprule
+\textbf{Namespace} & \textbf{Representative 1.3 role}\\
+\midrule
+\texttt{asr.data} & loading, validation, snapshots, point-in-time views\\
+\texttt{asr.hypotheses} & discovery, search, novelty audit, project handoff\\
+\texttt{asr.rates} & conventions, schedules, curves, instruments, quote risk, P\&L explain\\
+\texttt{asr.credit} & hazard/survival curves, CDS analytics and bootstrap\\
+\texttt{asr.validation} & CPCV, PBO, Reality Check, SPA, leakage, multiverse\\
+\texttt{asr.scenarios} & named asset/rate/volatility/liquidity shocks\\
+\texttt{asr.portfolio} & optimization, robust/cost-aware construction, risk budgeting\\
+\texttt{asr.risk} & VaR/ES, tail diagnostics, covariance comparison\\
+\texttt{asr.alpha / factors} & signal diagnostics, capacity, exposures and attribution\\
+\texttt{asr.backtesting} & chronology-aware implementation and cost accounting\\
+\texttt{asr.research} & experiments, registry, lineage graph, reports\\
+\texttt{asr.register} & adapters for internal providers, pricers and cost models\\
+\bottomrule
+\end{tabularx}\end{center}
+
+\section{Extended Release Evidence}
+The local validation record reports 336 tests across 36 test modules: core 27, quant 28, surfaces 15, API 4, rates 36, discovery 7, v1.2 regression 76, v1.3 63, paper 18, and production 62. The v1.3 audit-regression file contains direct tests for the corrected numerical/interface contracts. The package import sweep covers 84 modules with zero failures. The stable public compatibility snapshot covers 116 declared symbols and the callable-signature inventory records 258 top-level public callables. The corrected wheel was rebuilt from this source tree and a smoke installation reports version 1.3.0.
+
+The evidence reported here is local-artifact evidence. Hosted Python 3.10--3.13 and Linux/macOS/Windows compatibility jobs, hosted lint/type/security gates, a clean PEP 517 build, strict Twine validation, and TestPyPI installation are separate operational gates when the distribution is published to a registry.
+
+\section{Release-Update Coverage Matrix}
+This appendix provides an explicit audit against the ASRQuant 1.3.0 release notes and changelog. Every declared 1.3.0 update is represented in the manuscript:
+\begin{itemize}[leftmargin=1.2em,itemsep=.20em,topsep=.25em]
+\item \textbf{Market conventions:} calendars, custom holidays, business-day rules, day counts, stubs, frequencies, schedules, fixing/payment lags, and accrual fractions (Market Infrastructure section).
+\item \textbf{Rate instruments:} deposits, FRAs, fixed-rate bonds, swaps, and OIS with explicit pricing/cash-flow/risk methods (Market Infrastructure section).
+\item \textbf{CurveBuilder and rate risk:} quote retention/repricing, sparse-grid policy, calibration diagnostics, quote-to-zero Jacobian, node/key-rate/quote sensitivities, and rate P\&L explanation (Sections 5.2--5.3).
+\item \textbf{Credit foundations:} hazard/survival/default probabilities, CDS legs/par spreads, CS01-style sensitivity, jump-to-default diagnostics, and sequential bootstrap (Credit Foundations subsection).
+\item \textbf{Research validation:} CPCV, PBO, Reality Check, SPA, consolidated screens, leakage diagnostics, and multiverse/specification analysis (Research Validation section).
+\item \textbf{Research-data contracts:} deterministic snapshots, local store/cache/freshness/offline replay, and point-in-time observation/availability/revision views (Data, Point-in-Time Information and Provenance section).
+\item \textbf{Experiments and reporting:} configuration/data/code hashes, seed, environment/package identity, append-only registry, artifact lineage/stale propagation, and HTML/Markdown/JSON reports (Snapshots and Experiment Identity subsection).
+\item \textbf{Cross-domain utilities:} generic calibration/sensitivities, scenarios, four cost-model families, robust/cost-aware portfolio tools, covariance comparison, EVT/FHS/drawdown-at-risk, copulas, attribution, regimes, model comparison, Monte Carlo variance reduction, and capacity diagnostics (Cross-Domain Research Utilities and Decision Layer subsections).
+\item \textbf{Adapters:} registry/protocols for internal data, pricing, risk, execution, cost, and optimizer components (Cross-Domain Research Utilities and implications material).
+\item \textbf{Stability, CLI, and release gates:} public-API signature checks, native result serialization, the \texttt{info}, \texttt{doctor}, and non-mutating \texttt{validate} commands, the declared Python 3.10--3.13 compatibility matrix, and explicit gates for quote repricing, chronology, lineage, and API compatibility (Distribution/API Controls and Extended Release Evidence).
+\item \textbf{Compatibility/preservation:} the 1.0 paper contract, 1.1 discovery/rates capabilities, 1.2 canonical API, hypothesis workflow, and fail-closed live-broker boundary remain preserved (Introduction, Hypothesis Discovery, and limitations material).
+\end{itemize}
+
+
+\section{Audit-Finding Closure Matrix}
+\begin{center}\fontsize{8.1}{9.5}\selectfont
+\begin{tabularx}{\linewidth}{@{}p{.15\linewidth}p{.18\linewidth}X@{}}
+\toprule
+\textbf{ID} & \textbf{Class} & \textbf{Final 1.3.0 treatment}\\
+\midrule
+FIND-001 & Import weight & Optional visualisation, HTTP and ML stacks are lazy; a fresh package import no longer introduces those stacks itself.\\
+FIND-002 & Packaging & Matplotlib/Plotly/Jinja2, scikit-learn, requests and pypdf are optional extras rather than core Requires-Dist entries.\\
+FIND-003 & Critical risk & Key-rate triangles use asymmetric neighbouring widths; regression tests verify partition behaviour on uneven pillars.\\
+FIND-004 & Estimation quality & Vasicek calibration exposes $\mathrm{se}(\phi)$ and delta-method $\mathrm{se}(\kappa)$; finite-sample mean-reversion uncertainty remains documented as an estimator property.\\
+FIND-005 & Information & \texttt{summary\_metrics} exposes an Omega threshold instead of forcing the zero-threshold identity with Profit Factor.\\
+FIND-006 & GP contract & White-kernel noise is fixed at the requested value and requested/fitted noise are both reported.\\
+FIND-011 & Critical statistic & PSR/DSR operate on the per-observation Sharpe scale.\\
+FIND-012 & Compatibility & Removed statsmodels keyword arguments are not transmitted; the legacy ASR argument is retained only as a compatibility surface.\\
+FIND-013 & Convention & RSI-14 defaults to Wilder smoothing and exposes SMA explicitly.\\
+FIND-014 & Critical calibration & Intrinsic-boundary implied-volatility inversion raises a named non-identifiability error.\\
+FIND-015 & Factor stability & SVD/PCA signs are oriented deterministically using the largest absolute loading.\\
+\bottomrule
+\end{tabularx}\end{center}
+
+\section{Release-Candidate Finding Dispositions}
+\begin{center}\scriptsize
+\begin{tabularx}{\linewidth}{@{}p{.15\linewidth}p{.20\linewidth}X@{}}
+\toprule
+\textbf{Finding} & \textbf{Area} & \textbf{Final treatment} \\
+\midrule
+FIND-001 & Import weight & Optional visualization, HTTP and ML stacks are lazy; a fresh package import no longer introduces those stacks itself. \\
+FIND-002 & Packaging & Visualization/reporting, ML, provider and PDF stacks are optional extras rather than core requirements. \\
+FIND-003 & Critical risk & Key-rate triangles use asymmetric neighbouring widths; regression tests verify partition behaviour on uneven pillars. \\
+FIND-004 & Estimation quality & Vasicek calibration exposes uncertainty diagnostics while finite-sample limitations remain documented. \\
+FIND-005 & Information & Summary metrics expose an explicit Omega threshold rather than forcing a zero-threshold identity with Profit Factor. \\
+FIND-006 & GP contract & Observation noise is fixed when supplied and requested/fitted noise are both reported. \\
+FIND-007--010 & Disposition & These numbered review slots are not represented by reproducible release-contract changes in the supplied evidence. They are not counted as closed software fixes; the source record does not support assigning more specific dispositions per ID. \\
+FIND-011 & Critical statistic & PSR/DSR operate on the per-observation Sharpe scale. \\
+FIND-012 & Compatibility & Removed statsmodels keyword arguments are not transmitted; legacy compatibility surfaces are retained where required. \\
+FIND-013 & Convention & RSI-14 defaults to Wilder smoothing and exposes SMA explicitly. \\
+FIND-014 & Critical calibration & Intrinsic-boundary implied-volatility inversion raises a named non-identifiability error. \\
+FIND-015 & Factor stability & SVD/PCA signs are oriented deterministically using the largest absolute loading. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+Across FIND-001--FIND-015, eleven findings have documented final treatments in the supplied artifact and four identifiers (FIND-007--010) lack a reproducible closure record. The latter are disclosed explicitly and excluded from the closed-fix total rather than back-filled with unsupported dispositions.
+
+\section{Packaging Profiles}
+The final distribution separates a small scientific core from capability extras. The core contains NumPy, pandas, SciPy, statsmodels, Pydantic and PyYAML. Research teams can then add visualisation/reporting, machine learning, HTTP providers, PDF literature ingestion, optimisation, volatility or data-format extras according to their controlled environment. This separation reduces mandatory transitive dependencies and makes air-gapped or regulated deployments easier to reason about.
+
+\begin{lstlisting}
+pip install asrquant
+pip install "asrquant[visualization]"
+pip install "asrquant[ml]"
+pip install "asrquant[providers]"
+pip install "asrquant[literature]"
+\end{lstlisting}
+
+\section{Selected Numerical Contracts}
+\subsection{Key-rate partition}
+For pillar $t_i$ with neighbours $t_{i-1}$ and $t_{i+1}$, the corrected triangular weight is piecewise asymmetric:
+\begin{equation}
+w_i(t)=\begin{cases}
+\dfrac{t-t_{i-1}}{t_i-t_{i-1}}, & t\in[t_{i-1},t_i],\\[1.5mm]
+\dfrac{t_{i+1}-t}{t_{i+1}-t_i}, & t\in[t_i,t_{i+1}],\\[1.5mm]
+0,&\text{otherwise.}
+\end{cases}
+\end{equation}
+The left and right distances are not replaced by their maximum. This is the local condition needed for neighbouring tents to form a partition over an irregular grid.
+
+\subsection{PCA orientation}
+If $v_j$ is a principal loading vector and $k=\arg\max_i|v_{ij}|$, the release applies
+\begin{equation}
+\tilde v_j=\operatorname{sign}(v_{kj})v_j,
+\end{equation}
+with a positive anchor. Scores receive the same sign, preserving reconstruction exactly while producing a stable reporting orientation.
+
+\subsection{Vasicek uncertainty}
+With the discretised AR(1) representation $r_{t+1}=a+\phi r_t+\varepsilon_{t+1}$ and $\kappa=-\log(\phi)/\Delta t$, the reported delta-method approximation is
+\begin{equation}
+\operatorname{se}(\kappa)\approx \frac{\operatorname{se}(\phi)}{\phi\Delta t}.
+\end{equation}
+This diagnostic does not eliminate finite-sample bias; it makes the local identification uncertainty observable to the user.
+
+\section{Data Dictionary and Provenance}
+\begin{center}\fontsize{8.3}{9.7}\selectfont
+\begin{tabularx}{\linewidth}{@{}p{.30\linewidth}X@{}}
+\toprule
+\textbf{Artifact} & \textbf{Role in this manuscript}\\
+\midrule
+Curve quote fixture & deterministic deposit/swap inputs for curve and quote-risk examples\\
+Synthetic validation panel & fixed-seed strategy returns for PBO/Reality Check/SPA illustration\\
+Credit spread fixture & deterministic CDS spreads and recovery for hazard bootstrap\\
+Point-in-time timeline & conceptual availability/revision contract\\
+Synthetic backtest & fixed-seed illustration of explicit implementation costs\\
+Local validation record & 336-test, import, API, example and distribution evidence\\
+\bottomrule
+\end{tabularx}\end{center}
+
+All quantitative figures used for release mechanics are deterministic or fixed-seed demonstrations. They are not presented as forecasts or live strategy results.
+
+\section{Reproducibility Checklist}
+\begin{itemize}
+\item Software target recorded as ASRQuant 1.3.0.
+\item Manuscript title, date, authors, release artifact, and correspondence stated.
+\item Point-in-time data distinguishes observation, availability, and revision timestamps.
+\item Hypothesis evidence and novelty status remain separate.
+\item Curve build exposes quote repricing and Jacobian diagnostics.
+\item Quote-space risk is distinguished from internal node risk.
+\item Selection-risk diagnostics include CPCV, PBO, Reality Check, SPA, leakage, and multiverse tools.
+\item Experiment fingerprints, data snapshots, and artifact lineage are represented explicitly.
+\item Backtest chronology and implementation costs remain explicit.
+\item Local validation counts trace to the 1.3 release validation record.
+\item Hosted release gates are not reported as locally passed.
+\item AI-use disclosure states final drafting and editorial polishing of the document only.
+\end{itemize}
+
+\end{document}

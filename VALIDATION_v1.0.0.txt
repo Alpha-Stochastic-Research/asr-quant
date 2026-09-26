@@ -1,0 +1,66 @@
+ASRQuant 1.0.0 — FINAL LOCAL VALIDATION
+Date: 2026-08-10
+Manuscript: v0.1.0
+Software: 1.0.0
+
+PAPER/PACKAGE CONTRACT
+- Automated tests collected: 154
+- Dedicated paper-contract tests: 18 passed
+- Public visualization functions counted in viz modules: 102
+- Paper appendix workflows are represented in tests/test_paper_contract_v1.py
+
+ISOLATED TEST GROUPS
+- core:       27 passed
+- quant:      28 passed
+- surfaces:   15 passed
+- api:         4 passed
+- paper:      18 passed
+- production: 62 passed
+Total:       154 tests
+
+PRODUCTION COVERAGE GATE
+- tests/test_production_readiness_v1.py: 62 passed
+- audit_store.py: 91%
+- live.py: 87%
+- production.py: 97%
+- combined production boundary: 90%
+- fail-under gate: 90% — PASSED
+
+PACKAGE/SCIENTIFIC CORRECTIONS INCLUDED
+- stable version identifiers aligned to 1.0.0
+- manuscript identifies itself as v0.1.0 and software as ASRQuant 1.0.0
+- stale 0.4/0.5/rc release claims removed from current documentation
+- fixed-income zero-curve bootstrap validates frequency and complete coupon grids
+- coverage workflow uses Coverage.py directly to avoid pytest plugin/native-library double loading
+- paper-contract test group added to CI domain matrix
+- release asset upload explicitly targets the GitHub repository
+- runtime security/SBOM evidence separated from PyPI distribution files
+
+DISTRIBUTION VALIDATION
+- wheel built: asrquant-1.0.0-py3-none-any.whl
+- source distribution built: asrquant-1.0.0.tar.gz
+- wheel metadata: Name=asrquant, Version=1.0.0, Requires-Python=>=3.10
+- wheel import tested from an isolated target path
+- wheel CLI version tested: ASRQuant 1.0.0
+- one-import polynomial fit from wheel recovered coefficients 2.0, 3.0, -0.5
+- Black-Scholes call smoke test from wheel: 9.41340338
+- seven stochastic-process families smoke-tested from wheel
+- all importable package modules (excluding CLI __main__ dispatcher) imported successfully
+- sdist installed with no build isolation/no dependencies into an isolated target and imported as 1.0.0
+
+PAPER VALIDATION
+- PDF: paper/ASRQuant_paper.pdf
+- pages: 36
+- preflight: opens successfully, not encrypted, not scanned, no warnings
+- visual render inspected for title page, architecture/module table, and final disclosure page
+- manuscript version: 0.1.0
+- software release named in paper: 1.0.0
+- generative-AI disclosure appears at the end and is limited to drafting, debugging, and documentation
+
+REPRODUCED BENCHMARKS
+- core benchmark suite regenerated from stable source
+- extended numerical validation regenerated from stable source
+- paper figures regenerated for architecture, numerical validation and multidimensional surfaces
+
+HOSTED-CI NOTE
+The local validation above cannot substitute for GitHub-hosted checks on the exact release commit. Before publishing v1.0.0, the repository CI/security/distribution jobs should be green on the commit that receives the tag. CodeQL additionally requires repository-level Code Security to be enabled; that platform permission is separate from source correctness.

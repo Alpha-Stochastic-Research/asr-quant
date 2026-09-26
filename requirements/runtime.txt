@@ -1,0 +1,8 @@
+# ASRQuant core runtime dependency audit input.
+# Optional stacks live behind extras in pyproject.toml.
+numpy>=1.26,<3
+pandas>=2.0,<4
+scipy>=1.11,<2
+statsmodels>=0.14,<1
+pydantic>=2.6,<3
+PyYAML>=6.0,<7

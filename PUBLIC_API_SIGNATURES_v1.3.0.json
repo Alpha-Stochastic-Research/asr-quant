@@ -1,0 +1,1558 @@
+{
+  "schema_version": 1,
+  "package": "asrquant",
+  "release": "1.3.0",
+  "generated_for_release": "2026-09-03",
+  "scope": "top-level public callable names exposed by import asrquant as asr",
+  "callable_count": 258,
+  "callables": [
+    {
+      "name": "AccountSnapshot",
+      "signature": "(account_id: 'str', equity: 'float', last_equity: 'float', cash: 'float', buying_power: 'float', trading_blocked: 'bool', account_blocked: 'bool', timestamp: 'str' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "AlpacaBroker",
+      "signature": "(*, credentials: 'BrokerCredentials', environment: 'BrokerEnvironment', session: 'requests.Session | Any | None' = None, timeout_seconds: 'float' = 10.0, base_url: 'str | None' = None, _live_authorized: 'bool' = False) -> 'None'",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "AlphaVantageProvider",
+      "signature": "(api_key: 'str | None' = None, timeout: 'float' = 20.0) -> None",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "ApproximationResult",
+      "signature": "(model: 'Any', method: 'str', dimension: 'int', domain_min: 'np.ndarray', domain_max: 'np.ndarray', metadata: 'dict[str, Any]', predictor: 'Callable[[np.ndarray], np.ndarray]', uncertainty_predictor: 'Callable[[np.ndarray], tuple[np.ndarray, np.ndarray]] | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "AuditEvent",
+      "signature": "(sequence: 'int', event_id: 'str', timestamp: 'str', event_type: 'str', payload: 'dict[str, Any]', previous_hash: 'str', event_hash: 'str') -> None",
+      "kind": "class",
+      "module": "asrquant.audit_store"
+    },
+    {
+      "name": "AuditResult",
+      "signature": "(summary: 'pd.DataFrame', diagnostics: 'pd.Series', results: 'dict[str, BacktestResult]') -> None",
+      "kind": "class",
+      "module": "asrquant.audit"
+    },
+    {
+      "name": "BacktestResult",
+      "signature": "(prices: 'pd.DataFrame', asset_returns: 'pd.DataFrame', target_weights: 'pd.DataFrame', effective_weights: 'pd.DataFrame', gross_returns: 'pd.Series', net_returns: 'pd.Series', equity: 'pd.Series', turnover: 'pd.Series', costs: 'pd.Series', cost_breakdown: 'pd.DataFrame', spec: 'BacktestSpec', metadata: 'dict[str, Any]') -> None",
+      "kind": "class",
+      "module": "asrquant.backtest"
+    },
+    {
+      "name": "BacktestSpec",
+      "signature": "(initial_capital: 'float' = 100000.0, annualization: 'int' = 252, execution_delay: 'int' = 1, rebalance: 'str' = 'bar', long_only: 'bool' = False, max_gross_leverage: 'float' = 1.0, max_abs_weight: 'float' = 1.0, risk_free_rate: 'float' = 0.0, missing_data: 'MissingDataPolicy' = <MissingDataPolicy.RAISE: 'raise'>, costs: 'CostModel' = <factory>, name: 'str' = 'ASRQuant backtest', metadata: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.config"
+    },
+    {
+      "name": "BermudanLSMResult",
+      "signature": "(price: 'float', exercise_probability: 'np.ndarray', exercise_time_index: 'np.ndarray', path_values: 'np.ndarray') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "BinanceProvider",
+      "signature": "(base_url: 'str' = 'https://data-api.binance.vision', timeout: 'float' = 20.0) -> None",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "BrokerAdapter",
+      "signature": "(*args, **kwargs)",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "BrokerCredentials",
+      "signature": "(api_key: 'str', api_secret: 'str') -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "BrokerEnvironment",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "BrokerHealth",
+      "signature": "(state: 'HealthState', broker: 'str', environment: 'BrokerEnvironment', latency_ms: 'float', market_open: 'bool | None', account_reachable: 'bool', details: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "BrokerOrderReceipt",
+      "signature": "(broker_order_id: 'str', client_order_id: 'str', symbol: 'str', quantity: 'float', side: 'str', order_type: 'str', status: 'str', submitted_at: 'str', filled_quantity: 'float' = 0.0, average_fill_price: 'float | None' = None, request_id: 'str | None' = None, raw: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "CheckLevel",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "CheckState",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "CostModel",
+      "signature": "(commission_bps: 'float' = 0.0, spread_bps: 'float' = 0.0, slippage_bps: 'float' = 0.0, borrow_bps_annual: 'float' = 0.0, impact_coefficient: 'float' = 0.0, impact_exponent: 'float' = 1.5) -> None",
+      "kind": "class",
+      "module": "asrquant.config"
+    },
+    {
+      "name": "DataPlan",
+      "signature": "(requirements: 'list[DataRequirement]', notes: 'list[str]' = <factory>, hypothesis_id: 'str | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "DataRequirement",
+      "signature": "(name: 'str', role: 'str', suggested_source: 'str | None' = None, suggested_symbol: 'str | None' = None, frequency: 'str' = 'daily', field: 'str' = 'Close', availability_lag: 'int' = 0, point_in_time_required: 'bool' = False, required: 'bool' = True, description: 'str' = '') -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "DecisionResult",
+      "signature": "(status: 'str', score: 'float', reasons: 'list[str]', risks: 'list[str]', required_next_step: 'str', evidence: 'pd.Series', governance_note: 'str' = 'This is a research-governance decision, not personalized investment advice or an instruction to trade live capital.') -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "DeploymentCertificate",
+      "signature": "(certificate_id: 'str', issued_at: 'str', expires_at: 'str', release_version: 'str', broker: 'str', account_hash: 'str', risk_policy_hash: 'str', evidence_hash: 'str', max_live_capital: 'float', approved_by: 'tuple[str, ...]', environment_fingerprint: 'str', change_ticket: 'str', signature: 'str' = '') -> None",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "DeploymentEvidence",
+      "signature": "(release_version: 'str', ci_passed: 'bool' = False, test_count: 'int' = 0, coverage_percent: 'float' = 0.0, static_analysis_passed: 'bool' = False, dependency_scan_passed: 'bool' = False, secrets_scan_passed: 'bool' = False, sbom_present: 'bool' = False, artifacts_signed: 'bool' = False, reproducible_build_verified: 'bool' = False, disaster_recovery_tested: 'bool' = False, rollback_tested: 'bool' = False, monitoring_enabled: 'bool' = False, alerting_enabled: 'bool' = False, durable_audit_log_enabled: 'bool' = False, time_synchronization_verified: 'bool' = False, broker_paper_days: 'int' = 0, broker_paper_orders: 'int' = 0, reconciliation_mismatches: 'int' = 1, unresolved_critical_incidents: 'int' = 1, operator_approved: 'bool' = False, legal_compliance_reviewed: 'bool' = False, data_licenses_reviewed: 'bool' = False, strategy_owner_approved: 'bool' = False, model_validation_approved: 'bool' = False, change_ticket: 'str' = '', notes: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "DiscountCurve",
+      "signature": "(times: 'np.ndarray', discounts: 'np.ndarray', interpolation: 'str' = 'log_linear', name: 'str' = 'discount', metadata: 'Mapping[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "ECBProvider",
+      "signature": "(base_url: 'str' = 'https://data-api.ecb.europa.eu/service/data', timeout: 'float' = 30.0) -> None",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "EconomicHypothesis",
+      "signature": "(hypothesis_id: 'str', statement: 'str', predictor: 'str | None' = None, target: 'str | None' = None, expected_sign: 'str | None' = None, horizon: 'int | str | None' = None, universe: 'str | None' = None, null: 'str' = 'No stable out-of-sample predictive or explanatory relationship.', mechanism: 'str' = '', novelty_status: 'str' = 'conceptual', evidence_status: 'str' = 'unknown', confidence: 'float | None' = None, evidence: 'list[SourceExcerpt]' = <factory>, invalidation_criteria: 'list[str]' = <factory>, metadata: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "ExecutionBroker",
+      "signature": "(*args, **kwargs)",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "FREDProvider",
+      "signature": "(api_key: 'str | None' = None, timeout: 'float' = 20.0) -> None",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "FeaturePlan",
+      "signature": "(specs: 'list[FeatureSpec]', notes: 'list[str]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "FeatureSpec",
+      "signature": "(name: 'str', source: 'str | tuple[str, str]', transform: 'str' = 'raw', window: 'int | None' = None, lag: 'int' = 0, availability_lag: 'int' = 0, params: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "Fill",
+      "signature": "(order_id: 'str', symbol: 'str', quantity: 'float', price: 'float', commission: 'float', timestamp: 'Any', slippage: 'float' = 0.0) -> None",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "ForwardCurve",
+      "signature": "(starts: 'np.ndarray', ends: 'np.ndarray', forwards: 'np.ndarray', tenor: 'str' = 'generic') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "HealthState",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "HedgeSolution",
+      "signature": "(weights: 'np.ndarray', residual_exposure: 'np.ndarray', residual_norm: 'float') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "HypothesisCandidate",
+      "signature": "(hypothesis_id: 'str', statement: 'str', novelty_status: 'str', confidence: 'float', evidence: 'list[SourceExcerpt]' = <factory>, expected_sign: 'str | None' = None, tags: 'list[str]' = <factory>, rationale: 'str' = '', evidence_status: 'str' = 'proposed', metadata: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.literature"
+    },
+    {
+      "name": "HypothesisRegistry",
+      "signature": "(hypotheses: 'list[HypothesisCandidate]', corpus_fingerprint: 'str | None' = None, scope_note: 'str' = \"Novelty labels are corpus-relative. 'corpus-novel' never means that a claim has never been tested anywhere in the global literature.\") -> None",
+      "kind": "class",
+      "module": "asrquant.literature"
+    },
+    {
+      "name": "HypothesisTestResult",
+      "signature": "(feature: 'str', target_name: 'str', horizon: 'int', regression: 'Any', expected_sign: 'str | None', sign_consistent: 'bool | None', p_value: 'float | None') -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "LiteratureCorpus",
+      "signature": "(papers: 'list[PaperDocument]', topic: 'str | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.literature"
+    },
+    {
+      "name": "LiveRiskPolicy",
+      "signature": "(max_gross_leverage: 'float' = 1.0, max_position_weight: 'float' = 0.25, max_order_notional: 'float | None' = None, max_daily_turnover: 'float' = 2.0, max_drawdown: 'float' = 0.2, allow_short: 'bool' = True, minimum_cash: 'float' = 0.0, max_daily_loss: 'float' = 0.03, max_open_orders: 'int' = 20, max_orders_per_minute: 'int' = 30, max_price_deviation_bps: 'float' = 200.0, max_market_data_age_seconds: 'float' = 5.0, max_capital: 'float | None' = None, max_position_notional: 'float | None' = None, require_market_open: 'bool' = True, reject_duplicate_orders: 'bool' = True, symbol_allowlist: 'tuple[str, ...]' = (), symbol_denylist: 'tuple[str, ...]' = (), reconciliation_quantity_tolerance: 'float' = 1e-08, reconciliation_cash_tolerance: 'float' = 0.01, max_consecutive_broker_failures: 'int' = 3) -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "LiveTradingEngine",
+      "signature": "(*, broker: 'ExecutionBroker', policy: 'LiveRiskPolicy', audit_store: 'SQLiteAuditStore', kill_switch: 'PersistentKillSwitch') -> 'None'",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "MarketDataProvider",
+      "signature": "()",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "MarketDataSnapshot",
+      "signature": "(symbol: 'str', price: 'float', timestamp: 'str | datetime', bid: 'float | None' = None, ask: 'float | None' = None, source: 'str' = 'unknown') -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "MartingaleResult",
+      "signature": "(increments: 'pd.Series', statistics: 'pd.Series', regression: 'object') -> None",
+      "kind": "class",
+      "module": "asrquant.martingales"
+    },
+    {
+      "name": "MissingDataPolicy",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.config"
+    },
+    {
+      "name": "ModelFactory",
+      "signature": "()",
+      "kind": "class",
+      "module": "asrquant.models"
+    },
+    {
+      "name": "MonteCarloPriceResult",
+      "signature": "(price: 'float', standard_error: 'float', confidence_interval: 'tuple[float, float]', discounted_payoffs: 'np.ndarray', simulation: 'SimulationResult', confidence: 'float' = 0.95) -> None",
+      "kind": "class",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "MonteCarloResult",
+      "signature": "(estimate: 'float', outcomes: 'Array', estimator: 'str', level: 'float' = 0.95, confidence: 'float' = 0.95, scenarios: 'Any | None' = None, parameters: 'dict[str, Any]' = <factory>, metadata: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "MultiCurve",
+      "signature": "(discount: 'DiscountCurve', projections: 'Mapping[str, ForwardCurve]') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "OptionPrice",
+      "signature": "(price: 'float', model: 'str', greeks: 'dict[str, float] | None' = None, standard_error: 'float | None' = None, confidence_interval: 'tuple[float, float] | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "Order",
+      "signature": "(symbol: 'str', quantity: 'float', side: 'OrderSide', order_type: 'OrderType' = <OrderType.MARKET: 'market'>, limit_price: 'float | None' = None, stop_price: 'float | None' = None, timestamp: 'Any' = None, order_id: 'str' = <factory>, status: 'OrderStatus' = <OrderStatus.CREATED: 'created'>, metadata: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "OrderSide",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "OrderStatus",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "OrderType",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "PaperBroker",
+      "signature": "(initial_cash: 'float' = 100000.0, *, commission_bps: 'float' = 0.0, slippage_bps: 'float' = 0.0, participation_rate: 'float' = 1.0) -> 'None'",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "PaperDocument",
+      "signature": "(paper_id: 'str', title: 'str', path: 'str | None', pages: 'list[str]', authors: 'list[str]' = <factory>, year: 'int | None' = None, abstract: 'str | None' = None, metadata: 'dict[str, Any]' = <factory>, warnings: 'list[str]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.literature"
+    },
+    {
+      "name": "PaperTrader",
+      "signature": "(*, initial_capital: 'float' = 100000.0, commission_bps: 'float' = 0.0, slippage_bps: 'float' = 0.0, policy: 'RiskPolicy | None' = None, annualization: 'int' = 252) -> 'None'",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "PaperTradingResult",
+      "signature": "(equity: 'pd.Series', cash: 'pd.Series', positions: 'pd.DataFrame', target_weights: 'pd.DataFrame', realized_weights: 'pd.DataFrame', orders: 'pd.DataFrame', fills: 'pd.DataFrame', risk_events: 'pd.DataFrame', policy: 'RiskPolicy', metadata: 'dict[str, Any]') -> None",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "PersistentKillSwitch",
+      "signature": "(path: 'str | Path') -> 'None'",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "PlotConfig",
+      "signature": "(backend: \"Literal['matplotlib', 'plotly']\" = 'matplotlib', figsize: 'tuple[float, float]' = (10.0, 5.5), title: 'str | None' = None, show: 'bool' = False) -> None",
+      "kind": "class",
+      "module": "asrquant.config"
+    },
+    {
+      "name": "PlotHandle",
+      "signature": "(object: 'Any') -> None",
+      "kind": "class",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "PollingFeed",
+      "signature": "(provider: 'MarketDataProvider', symbol: 'str', interval_seconds: 'float' = 60.0) -> None",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "PortfolioSpec",
+      "signature": "(gross_leverage: 'float' = 1.0, max_abs_weight: 'float' = 1.0, long_only: 'bool' = False, volatility_target: 'float | None' = None, volatility_window: 'int' = 20, max_leverage: 'float' = 2.0) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "PositionSnapshot",
+      "signature": "(symbol: 'str', quantity: 'float', market_value: 'float', current_price: 'float', side: 'str' = 'long') -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "PreTradeRiskEngine",
+      "signature": "(policy: 'LiveRiskPolicy') -> 'None'",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "ProductionReadinessGate",
+      "signature": "(*, minimum_tests: 'int' = 100, minimum_coverage: 'float' = 90.0, minimum_paper_days: 'int' = 30, minimum_paper_orders: 'int' = 500) -> 'None'",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "ProductionReadinessReport",
+      "signature": "(checks: 'list[ReadinessCheck]', generated_at: 'str' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "QuantLab",
+      "signature": "(prices: 'pd.Series | pd.DataFrame', missing_data: 'str' = 'raise')",
+      "kind": "class",
+      "module": "asrquant.api"
+    },
+    {
+      "name": "RateQuantLab",
+      "signature": "(discount_curve: 'DiscountCurve', projections: 'dict[str, ForwardCurve]' = <factory>, history: 'list[dict[str, Any]]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "ReadinessCheck",
+      "signature": "(code: 'str', state: 'CheckState', level: 'CheckLevel', message: 'str', evidence: 'Any' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.production"
+    },
+    {
+      "name": "ReconciliationReport",
+      "signature": "(state: 'ReconciliationState', position_differences: 'dict[str, float]', cash_difference: 'float', generated_at: 'str' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "ReconciliationState",
+      "signature": "(*values)",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "ResearchBoard",
+      "signature": "(candidates: 'list[ResearchCandidate]', observations: 'list[ResearchObservation]' = <factory>, domain: 'str' = 'quantitative_finance', scope_note: 'str' = 'Candidates are hypothesis-generation outputs. Novelty is NOT established until a documented literature search and prior-art review are completed.') -> None",
+      "kind": "class",
+      "module": "asrquant.discovery"
+    },
+    {
+      "name": "ResearchCandidate",
+      "signature": "(candidate_id: 'str', title: 'str', research_question: 'str', hypothesis: 'str', domain: 'str', contribution_type: 'str', rationale: 'str', methods: 'tuple[str, ...]' = (), data_requirements: 'tuple[str, ...]' = (), falsification_rule: 'str' = 'Reject the candidate if the effect is not stable under pre-specified robustness checks.', novelty_status: 'str' = 'NOT_ESTABLISHED', evidence_status: 'str' = 'PROPOSED', priority_score: 'float' = 0.5, source_observations: 'tuple[str, ...]' = (), risks: 'tuple[str, ...]' = (), tags: 'tuple[str, ...]' = (), metadata: 'Mapping[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.discovery"
+    },
+    {
+      "name": "ResearchObservation",
+      "signature": "(observation_id: 'str', kind: 'str', description: 'str', score: 'float', variables: 'tuple[str, ...]' = (), evidence: 'Mapping[str, Any]' = <factory>, domain: 'str' = 'quantitative_finance') -> None",
+      "kind": "class",
+      "module": "asrquant.discovery"
+    },
+    {
+      "name": "ResearchProject",
+      "signature": "(name: 'str', topic: 'str | None' = None, corpus: 'LiteratureCorpus | None' = None, registry: 'HypothesisRegistry | None' = None, hypothesis: 'EconomicHypothesis | None' = None, data_plan: 'DataPlan | None' = None, data: 'pd.DataFrame | None' = None, tradable_assets: 'list[str]' = <factory>, feature_plan: 'FeaturePlan | None' = None, features: 'pd.DataFrame | None' = None, signal_spec: 'SignalSpec | None' = None, raw_weights: 'pd.DataFrame | None' = None, portfolio_spec: 'PortfolioSpec | None' = None, weights: 'pd.DataFrame | None' = None, backtest_result: 'BacktestResult | None' = None, hypothesis_test_result: 'HypothesisTestResult | None' = None, robustness_result: 'RobustnessResult | None' = None, decision_result: 'DecisionResult | None' = None, paper_trading_result: 'PaperTradingResult | None' = None, history: 'list[dict[str, Any]]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "RiskDecision",
+      "signature": "(approved: 'bool', codes: 'tuple[str, ...]', reasons: 'tuple[str, ...]', metrics: 'dict[str, float]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.live"
+    },
+    {
+      "name": "RiskPolicy",
+      "signature": "(max_gross_leverage: 'float' = 1.0, max_position_weight: 'float' = 0.25, max_order_notional: 'float | None' = None, max_daily_turnover: 'float' = 2.0, max_drawdown: 'float' = 0.2, allow_short: 'bool' = True, minimum_cash: 'float' = 0.0) -> None",
+      "kind": "class",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "RobustnessResult",
+      "signature": "(baseline_metrics: 'pd.Series', implementation_audit: 'AuditResult', subperiod_metrics: 'pd.DataFrame', bootstrap: 'pd.Series', leakage_diagnostics: 'pd.Series', diagnostics: 'pd.Series', parameter_sweep: 'pd.DataFrame | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "SABRCalibration",
+      "signature": "(alpha: 'float', beta: 'float', rho: 'float', nu: 'float', rmse: 'float', fitted_vols: 'np.ndarray', success: 'bool') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "SQLiteAuditStore",
+      "signature": "(path: 'str | Path') -> 'None'",
+      "kind": "class",
+      "module": "asrquant.audit_store"
+    },
+    {
+      "name": "SignalSpec",
+      "signature": "(feature: 'str', method: 'str' = 'threshold_pair', long_asset: 'str | None' = None, short_asset: 'str | None' = None, upper: 'float' = 1.0, lower: 'float | None' = None, direction: 'str' = 'positive', gross: 'float' = 1.0, signal_lag: 'int' = 1, neutral_when_inactive: 'bool' = True) -> None",
+      "kind": "class",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "SimulationResult",
+      "signature": "(paths: 'pd.DataFrame', model: 'str', parameters: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "SourceExcerpt",
+      "signature": "(paper_id: 'str', page: 'int', text: 'str', section: 'str | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.literature"
+    },
+    {
+      "name": "SurfaceResult",
+      "signature": "(x_values: 'np.ndarray', y_values: 'np.ndarray', z_values: 'np.ndarray', x_name: 'str' = 'x', y_name: 'str' = 'y', z_name: 'str' = 'value', frame_values: 'np.ndarray | None' = None, frame_name: 'str | None' = None, frame_parameters: 'pd.DataFrame | None' = None, metadata: 'dict[str, Any]' = <factory>) -> None",
+      "kind": "class",
+      "module": "asrquant.surfaces"
+    },
+    {
+      "name": "VasicekCalibration",
+      "signature": "(kappa: 'float', theta: 'float', sigma: 'float', intercept: 'float', phi: 'float', residual_std: 'float') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "VolatilityForecast",
+      "signature": "(model: 'str', conditional_volatility: 'pd.Series', forecast: 'pd.Series', model_result: 'object | None' = None) -> None",
+      "kind": "class",
+      "module": "asrquant.volatility"
+    },
+    {
+      "name": "WalkForwardMLResult",
+      "signature": "(estimator_name: 'str', task: 'str', predictions: 'pd.Series', actual: 'pd.Series', probabilities: 'pd.Series | None', fold_metrics: 'pd.DataFrame', aggregate_metrics: 'pd.Series', fitted_models: 'list[Any]') -> None",
+      "kind": "class",
+      "module": "asrquant.machine_learning"
+    },
+    {
+      "name": "WeeklyResearchCycle",
+      "signature": "(candidate: 'ResearchCandidate', project: 'ResearchProject', launch_friday: 'date', publication_friday: 'date', plan: 'pd.DataFrame') -> None",
+      "kind": "class",
+      "module": "asrquant.research_ops"
+    },
+    {
+      "name": "YahooProvider",
+      "signature": "(auto_adjust: 'bool' = True) -> None",
+      "kind": "class",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "YieldCurveCalibration",
+      "signature": "(model: 'str', parameters: 'Mapping[str, float]', rmse: 'float', fitted_rates: 'np.ndarray', success: 'bool') -> None",
+      "kind": "class",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "accrued_interest",
+      "signature": "(face: 'float', coupon_rate: 'float', frequency: 'int', fraction_since_coupon: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "arithmetic_brownian_motion",
+      "signature": "(initial: 'float' = 100.0, drift: 'float' = 0.0, volatility: 'float' = 0.2, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "asian_option_mc",
+      "signature": "(spot: 'float', strike: 'float', maturity: 'float', rate: 'float', volatility: 'float', option: 'str' = 'call', paths: 'int' = 50000, steps: 'int' = 252, dividend: 'float' = 0.0, random_state: 'int | None' = 0) -> 'MonteCarloPriceResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "autoregression_fit",
+      "signature": "(series: 'pd.Series', lags: 'int | list[int]' = 1, trend: 'str' = 'c', *, old_names: 'bool' = False)",
+      "kind": "callable",
+      "module": "asrquant.statistics"
+    },
+    {
+      "name": "autoresearch",
+      "signature": "(*, hypothesis: 'str | EconomicHypothesis', data: 'pd.DataFrame | str | Path', tradable_assets: 'Sequence[str]', topic: 'str | None' = None, feature_plan: 'FeaturePlan | Sequence[FeatureSpec] | str' = 'recommended', signal_spec: 'SignalSpec | None' = None, portfolio_spec: 'PortfolioSpec | None' = None, backtest_spec: 'BacktestSpec | None' = None, name: 'str' = 'ASRQuant automatic research project') -> 'ResearchProject'",
+      "kind": "callable",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "bachelier_greeks",
+      "signature": "(forward: 'float | np.ndarray', strike: 'float | np.ndarray', maturity: 'float | np.ndarray', normal_volatility: 'float | np.ndarray', option: 'str' = 'call', discount: 'float | np.ndarray' = 1.0) -> 'dict[str, np.ndarray]'",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "bachelier_price",
+      "signature": "(forward: 'float | np.ndarray', strike: 'float | np.ndarray', maturity: 'float | np.ndarray', normal_volatility: 'float | np.ndarray', option: 'str' = 'call', discount: 'float | np.ndarray' = 1.0)",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "basis_swap_pv",
+      "signature": "(discount: 'DiscountCurve', leg_a: 'ForwardCurve', leg_b: 'ForwardCurve', start: 'float', end: 'float', *, spread_a: 'float' = 0.0, notional: 'float' = 1.0) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "bermudan_lsm",
+      "signature": "(immediate_values: 'np.ndarray', state_paths: 'np.ndarray', interval_discounts: 'ArrayLike', *, polynomial_degree: 'int' = 2, valuation_discount: 'float' = 1.0) -> 'BermudanLSMResult'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "bilinear_interpolation",
+      "signature": "(x_values: 'Sequence[float]', y_values: 'Sequence[float]', z_values: 'Any', *, extrapolate: 'bool' = False) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "black76_price",
+      "signature": "(forward: 'float | np.ndarray', strike: 'float | np.ndarray', maturity: 'float | np.ndarray', rate: 'float', volatility: 'float | np.ndarray', option: 'str' = 'call')",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "black_karasinski_paths",
+      "signature": "(r0: 'float', mean_reversion: 'float', theta_log: 'float', sigma: 'float', maturity: 'float', *, steps: 'int' = 252, paths: 'int' = 10000, random_state: 'int | None' = 0) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "black_scholes_greeks",
+      "signature": "(spot: 'float | np.ndarray', strike: 'float | np.ndarray', maturity: 'float | np.ndarray', rate: 'float', volatility: 'float | np.ndarray', option: 'str' = 'call', dividend: 'float' = 0.0) -> 'dict[str, np.ndarray]'",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "black_scholes_price",
+      "signature": "(spot: 'float | np.ndarray', strike: 'float | np.ndarray', maturity: 'float | np.ndarray', rate: 'float', volatility: 'float | np.ndarray', option: 'str' = 'call', dividend: 'float' = 0.0)",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "bond_forward_price",
+      "signature": "(discount: 'DiscountCurve', spot_dirty_price: 'float', delivery: 'float', coupon_times: 'ArrayLike' = (), coupon_cashflows: 'ArrayLike' = ()) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "bond_price",
+      "signature": "(face: 'float', coupon_rate: 'float', maturity: 'float', yield_rate: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "bond_price_from_curve",
+      "signature": "(curve: 'DiscountCurve', face: 'float', coupon_rate: 'float', maturity: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "bootstrap_discount_curve",
+      "signature": "(*, deposits: 'pd.DataFrame | None' = None, fras: 'pd.DataFrame | None' = None, swaps: 'pd.DataFrame | None' = None, swap_frequency: 'int' = 2, interpolation: 'str' = 'log_linear', name: 'str' = 'bootstrapped') -> 'DiscountCurve'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "bootstrap_projection_curve_from_swaps",
+      "signature": "(discount: 'DiscountCurve', swaps: 'pd.DataFrame', *, tenor: 'float' = 0.5, fixed_frequency: 'int' = 2, name: 'str' = 'projection') -> 'ForwardCurve'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "bootstrap_zero_curve",
+      "signature": "(instruments: 'pd.DataFrame', frequency: 'int | None' = None) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "build_manifest",
+      "signature": "(result: 'Any', **metadata: 'Any') -> 'Manifest'",
+      "kind": "callable",
+      "module": "asrquant.provenance"
+    },
+    {
+      "name": "calibrate_nelson_siegel",
+      "signature": "(maturities: 'ArrayLike', zero_rates: 'ArrayLike', *, initial: 'Sequence[float] | None' = None) -> 'YieldCurveCalibration'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "calibrate_sabr",
+      "signature": "(strikes: 'ArrayLike', market_vols: 'ArrayLike', forward: 'float', expiry: 'float', *, beta: 'float' = 0.5, shift: 'float' = 0.0, initial: 'tuple[float, float, float]' = (0.02, 0.0, 0.5)) -> 'SABRCalibration'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "calibrate_svensson",
+      "signature": "(maturities: 'ArrayLike', zero_rates: 'ArrayLike', *, initial: 'Sequence[float] | None' = None) -> 'YieldCurveCalibration'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "calibrate_vasicek",
+      "signature": "(rates: 'ArrayLike', dt: 'float' = 0.003968253968253968) -> 'VasicekCalibration'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "cap_floor_price",
+      "signature": "(discount: 'DiscountCurve', periods: 'Sequence[tuple[float, float]]', strike: 'float', volatilities: 'float | Sequence[float]', *, notional: 'float' = 1.0, option: 'str' = 'cap', model: 'str' = 'black76', projection: 'ForwardCurve | None' = None, shift: 'float' = 0.0) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "caplet_price",
+      "signature": "(discount: 'DiscountCurve', start: 'float', end: 'float', strike: 'float', volatility: 'float', *, notional: 'float' = 1.0, option: 'str' = 'caplet', model: 'str' = 'black76', projection: 'ForwardCurve | None' = None, shift: 'float' = 0.0) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "carry_roll_down",
+      "signature": "(curve_today: 'DiscountCurve', maturity: 'float', horizon: 'float', *, face: 'float' = 1.0) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "cir_process",
+      "signature": "(initial: 'float' = 0.03, speed: 'float' = 1.5, mean: 'float' = 0.04, volatility: 'float' = 0.2, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "cir_zero_coupon_bond",
+      "signature": "(r_t: 'float', t: 'float', maturity: 'float', kappa: 'float', theta: 'float', sigma: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "clean_price",
+      "signature": "(dirty_price: 'float', accrued: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "clean_prices",
+      "signature": "(prices: 'pd.Series | pd.DataFrame', policy: 'MissingDataPolicy | str' = <MissingDataPolicy.RAISE: 'raise'>) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "compare_backtests",
+      "signature": "(results: 'dict[str, BacktestResult]') -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.backtest"
+    },
+    {
+      "name": "compounded_overnight_rate",
+      "signature": "(rates: 'ArrayLike', accruals: 'ArrayLike') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "convexity",
+      "signature": "(face: 'float', coupon_rate: 'float', maturity: 'float', yield_rate: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "correlated_gbm",
+      "signature": "(initials: 'np.ndarray | list[float]', drifts: 'np.ndarray | list[float]', volatilities: 'np.ndarray | list[float]', correlation: 'np.ndarray', maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "correlated_normal",
+      "signature": "(mean: 'Sequence[float] | Array', covariance: 'Array', n_scenarios: 'int' = 10000, *, random_state: 'int | None' = 0) -> 'Array'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "create_model",
+      "signature": "(name: 'str', *, task: 'str | None' = None, **kwargs: 'Any')",
+      "kind": "callable",
+      "module": "asrquant.models"
+    },
+    {
+      "name": "cross_currency_zero_coupon_pv",
+      "signature": "(spot_fx: 'float', domestic_discount: 'DiscountCurve', foreign_discount: 'DiscountCurve', maturity: 'float', *, domestic_notional: 'float', foreign_notional: 'float', receive_foreign: 'bool' = True) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "crr_binomial_price",
+      "signature": "(spot: 'float', strike: 'float', maturity: 'float', rate: 'float', volatility: 'float', option: 'str' = 'call', steps: 'int' = 500, dividend: 'float' = 0.0, american: 'bool' = False) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "cubic_spline",
+      "signature": "(x: 'Any', y: 'Any', *, boundary_condition: 'str' = 'not-a-knot', extrapolate: 'bool' = False) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "curve_interpolation_risk",
+      "signature": "(times: 'ArrayLike', zero_rates: 'ArrayLike', evaluation_grid: 'ArrayLike | None' = None) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "curve_scenario",
+      "signature": "(curve: 'DiscountCurve', *, parallel_bp: 'float' = 0.0, slope_bp: 'float' = 0.0, curvature_bp: 'float' = 0.0) -> 'DiscountCurve'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "data_fingerprint",
+      "signature": "(data: 'pd.Series | pd.DataFrame') -> 'str'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "data_quality_report",
+      "signature": "(data: 'pd.Series | pd.DataFrame') -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "date_range",
+      "signature": "(start: 'Any' = None, end: 'Any' = None, periods: 'int | None' = None, freq: 'str | None' = None)",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "dirty_price",
+      "signature": "(clean: 'float', accrued: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "discount_factor",
+      "signature": "(rate: 'ArrayLike', maturity: 'ArrayLike', compounding: 'str | int' = 'continuous')",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "discount_process",
+      "signature": "(values: 'pd.Series', rate: 'float' = 0.0, annualization: 'int' = 252) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.martingales"
+    },
+    {
+      "name": "dollar_convexity",
+      "signature": "(pricer, curve: 'DiscountCurve', bump: 'float' = 0.0001) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "download",
+      "signature": "(provider: 'str | MarketDataProvider', symbols: 'str | Sequence[str]', *, field: 'str' = 'Close', **kwargs) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "dv01",
+      "signature": "(pricer, curve: 'DiscountCurve', bump: 'float' = 0.0001) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "empirical_quantile",
+      "signature": "(values: 'Any', level: 'float' = 0.95) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "euler_maruyama",
+      "signature": "(drift: 'Callable[..., Any]', diffusion: 'Callable[..., Any]', initial: 'float | Sequence[float] | Array', *, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 10000, random_state: 'int | None' = 0, parameters: 'Mapping[str, Any] | None' = None) -> 'Array'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "european_option_mc",
+      "signature": "(spot: 'float', strike: 'float', maturity: 'float', rate: 'float', volatility: 'float', option: 'str' = 'call', paths: 'int' = 100000, steps: 'int' = 1, dividend: 'float' = 0.0, antithetic: 'bool' = True, random_state: 'int | None' = 0) -> 'MonteCarloPriceResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "evaluate_parameter_surface",
+      "signature": "(function: 'Callable[..., Any]', parameter_grid: 'Mapping[str, ArrayLike]', *, x: 'str | None' = None, y: 'str | None' = None, animate_by: 'str | Sequence[str] | None' = None, z_name: 'str' = 'value', metric: 'MetricSelector' = None, fixed_params: 'Mapping[str, Any] | None' = None, vectorized: 'bool' = False, call_style: 'str' = 'keyword', n_jobs: 'int' = 1, error_policy: 'str' = 'raise', max_evaluations: 'int' = 1000000, progress: 'ProgressCallback | None' = None) -> 'SurfaceResult'",
+      "kind": "callable",
+      "module": "asrquant.surfaces"
+    },
+    {
+      "name": "evaluate_surface",
+      "signature": "(function: 'Callable[..., Any]', x_values: 'ArrayLike', y_values: 'ArrayLike', *, x_name: 'str' = 'x', y_name: 'str' = 'y', z_name: 'str' = 'value', metric: 'MetricSelector' = None, fixed_params: 'Mapping[str, Any] | None' = None, vectorized: 'bool' = False, call_style: 'str' = 'keyword', n_jobs: 'int' = 1, error_policy: 'str' = 'raise') -> 'SurfaceResult'",
+      "kind": "callable",
+      "module": "asrquant.surfaces"
+    },
+    {
+      "name": "evaluate_surface_animation",
+      "signature": "(function: 'Callable[..., Any]', x_values: 'ArrayLike', y_values: 'ArrayLike', frame_values: 'ArrayLike', *, x_name: 'str' = 'x', y_name: 'str' = 'y', frame_name: 'str' = 'frame', z_name: 'str' = 'value', metric: 'MetricSelector' = None, fixed_params: 'Mapping[str, Any] | None' = None, vectorized: 'bool' = False, call_style: 'str' = 'keyword', n_jobs: 'int' = 1, error_policy: 'str' = 'raise') -> 'SurfaceResult'",
+      "kind": "callable",
+      "module": "asrquant.surfaces"
+    },
+    {
+      "name": "event_probability",
+      "signature": "(values: 'Any', event: 'Callable[[Array], Any] | None' = None) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "ewma_volatility",
+      "signature": "(returns: 'pd.Series', decay: 'float' = 0.94, annualization: 'int' = 252) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.volatility"
+    },
+    {
+      "name": "finite_difference_gradient",
+      "signature": "(function: 'Callable[..., float]', point: 'Sequence[float]', *, step: 'float' = 1e-05) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "finite_difference_hessian",
+      "signature": "(function: 'Callable[..., float]', point: 'Sequence[float]', *, step: 'float' = 0.0001) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "fit",
+      "signature": "(x: 'Any', y: 'Any', *, method: 'str' = 'ols', degree: 'int' = 2, **kwargs: 'Any')",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "forward_discount_factor",
+      "signature": "(p_start: 'ArrayLike', p_end: 'ArrayLike')",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "forward_rate_from_discounts",
+      "signature": "(p_start: 'ArrayLike', p_end: 'ArrayLike', start: 'ArrayLike', end: 'ArrayLike', compounding: 'str' = 'simple')",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "forward_target",
+      "signature": "(prices: 'pd.Series', horizon: 'int' = 1, classification: 'bool' = False) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.machine_learning"
+    },
+    {
+      "name": "fra_forward_rate",
+      "signature": "(curve: 'DiscountCurve', start: 'float', end: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "fra_pv",
+      "signature": "(curve: 'DiscountCurve', start: 'float', end: 'float', strike: 'float', *, notional: 'float' = 1.0, position: 'str' = 'receive_float', settlement: 'str' = 'end', projection: 'ForwardCurve | None' = None) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "frame",
+      "signature": "(data: 'Any' = None, *, index: 'Any' = None, columns: 'Any' = None) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "fx_forward_rate",
+      "signature": "(spot_fx: 'float', domestic_discount: 'DiscountCurve', foreign_discount: 'DiscountCurve', maturity: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "garch_forecast",
+      "signature": "(returns: 'pd.Series', p: 'int' = 1, q: 'int' = 1, horizon: 'int' = 5, distribution: 'str' = 't', annualization: 'int' = 252) -> 'VolatilityForecast'",
+      "kind": "callable",
+      "module": "asrquant.volatility"
+    },
+    {
+      "name": "garman_klass_volatility",
+      "signature": "(open_: 'pd.Series', high: 'pd.Series', low: 'pd.Series', close: 'pd.Series', window: 'int' = 21, annualization: 'int' = 252) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.volatility"
+    },
+    {
+      "name": "gaussian_process",
+      "signature": "(x: 'Any', y: 'Any', *, length_scale: 'float | Sequence[float]' = 1.0, noise: 'float' = 1e-06, normalize_y: 'bool' = True, random_state: 'int | None' = 0) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "geometric_brownian_motion",
+      "signature": "(initial: 'float' = 100.0, drift: 'float' = 0.05, volatility: 'float' = 0.2, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0, antithetic: 'bool' = False) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "get_provider",
+      "signature": "(name: 'str', **kwargs) -> 'MarketDataProvider'",
+      "kind": "callable",
+      "module": "asrquant.providers"
+    },
+    {
+      "name": "hagan_sabr_volatility",
+      "signature": "(forward: 'float', strike: 'float', expiry: 'float', alpha: 'float', beta: 'float', rho: 'float', nu: 'float', *, shift: 'float' = 0.0) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "hedging_loss",
+      "signature": "(payoff: 'Any', prices: 'Any', positions: 'Any', *, premium: 'float' = 0.0, cost_rate: 'float' = 0.0, initial_position: 'float | Array' = 0.0) -> 'Array'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "heston_process",
+      "signature": "(initial: 'float' = 100.0, drift: 'float' = 0.05, initial_variance: 'float' = 0.04, mean_reversion: 'float' = 2.0, long_variance: 'float' = 0.04, vol_of_vol: 'float' = 0.5, correlation: 'float' = -0.7, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 2000, random_state: 'int | None' = 0) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "hjm_one_factor_paths",
+      "signature": "(maturities: 'ArrayLike', initial_forwards: 'ArrayLike', volatilities: 'ArrayLike', horizon: 'float', *, steps: 'int' = 100, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "ho_lee_paths",
+      "signature": "(r0: 'float', theta: 'float', sigma: 'float', maturity: 'float', *, steps: 'int' = 252, paths: 'int' = 10000, random_state: 'int | None' = 0) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "hull_white_paths",
+      "signature": "(r0: 'float', mean_reversion: 'float', theta: 'float', sigma: 'float', maturity: 'float', *, steps: 'int' = 252, paths: 'int' = 10000, random_state: 'int | None' = 0) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "implementation_audit",
+      "signature": "(prices: 'pd.Series | pd.DataFrame', target_weights: 'pd.Series | pd.DataFrame', base_spec: 'BacktestSpec | None' = None, execution_delays: 'Iterable[int]' = (0, 1), linear_costs_bps: 'Iterable[float]' = (0.0, 5.0, 10.0), rebalances: 'Iterable[str]' = ('bar',)) -> 'AuditResult'",
+      "kind": "callable",
+      "module": "asrquant.audit"
+    },
+    {
+      "name": "implied_rate_volatility",
+      "signature": "(price: 'float', pricer, *, lower: 'float' = 1e-08, upper: 'float' = 5.0) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "implied_volatility",
+      "signature": "(market_price: 'float', spot: 'float', strike: 'float', maturity: 'float', rate: 'float', option: 'str' = 'call', dividend: 'float' = 0.0, model: 'str' = 'black_scholes') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "kernel_regression",
+      "signature": "(x: 'Any', y: 'Any', *, bandwidth: 'float' = 1.0) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "key_rate_dv01",
+      "signature": "(pricer, curve: 'DiscountCurve', key_maturities: 'Sequence[float]', bump: 'float' = 0.0001) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "key_rate_hedge",
+      "signature": "(target_exposure: 'ArrayLike', hedge_exposures: 'ArrayLike', *, ridge: 'float' = 0.0) -> 'HedgeSolution'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "lag_features",
+      "signature": "(data: 'pd.Series | pd.DataFrame', lags: 'int | list[int]' = (1, 2, 5, 10, 20), *, include_current: 'bool' = False) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.machine_learning"
+    },
+    {
+      "name": "level_slope_curvature",
+      "signature": "(yields: 'pd.DataFrame') -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "linear_interpolation",
+      "signature": "(x: 'Any', y: 'Any', *, extrapolate: 'bool' = False) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "lmm_terminal_measure_paths",
+      "signature": "(initial_forwards: 'ArrayLike', accruals: 'ArrayLike', volatilities: 'ArrayLike', correlation: 'np.ndarray', horizon: 'float', *, steps: 'int' = 100, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "load_prices",
+      "signature": "(path: 'str | Path', date_column: 'str | None' = None, *, columns: 'Sequence[str] | None' = None, sheet_name: 'str | int' = 0) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "load_sql",
+      "signature": "(query: 'str', connection, date_column: 'str', columns: 'Sequence[str] | None' = None) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "log_returns",
+      "signature": "(prices: 'pd.Series | pd.DataFrame') -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "macaulay_duration",
+      "signature": "(face: 'float', coupon_rate: 'float', maturity: 'float', yield_rate: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "martingale_diagnostics",
+      "signature": "(values: 'pd.Series', *, rate: 'float' = 0.0, annualization: 'int' = 252, lags: 'int' = 10) -> 'MartingaleResult'",
+      "kind": "callable",
+      "module": "asrquant.martingales"
+    },
+    {
+      "name": "maturity_to_years",
+      "signature": "(maturity: 'str | float | int') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "mean_confidence_interval",
+      "signature": "(values: 'Any', confidence: 'float' = 0.95) -> 'tuple[float, float]'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "merton_jump_diffusion",
+      "signature": "(initial: 'float' = 100.0, drift: 'float' = 0.05, volatility: 'float' = 0.2, jump_intensity: 'float' = 0.5, jump_mean: 'float' = -0.1, jump_volatility: 'float' = 0.2, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 2000, random_state: 'int | None' = 0) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "modified_duration",
+      "signature": "(face: 'float', coupon_rate: 'float', maturity: 'float', yield_rate: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "monte_carlo_expected_shortfall",
+      "signature": "(losses: 'Any', level: 'float' = 0.95) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "monte_carlo_parameter_surface",
+      "signature": "(generator: 'Generator', quantity: 'Quantity | None', parameter_grid: 'Mapping[str, Sequence[Any]]', *, x: 'str', y: 'str', animate_by: 'str | Sequence[str] | None' = None, estimator: 'Reducer' = 'mean', level: 'float' = 0.95, confidence: 'float' = 0.95, n_scenarios: 'int' = 10000, random_state: 'int | None' = 0, fixed_params: 'Mapping[str, Any] | None' = None, z_name: 'str | None' = None, n_jobs: 'int' = 1) -> 'SurfaceResult'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "monte_carlo_price",
+      "signature": "(simulation: 'SimulationResult', payoff: 'Callable[[np.ndarray], np.ndarray]', *, rate: 'float' = 0.0, maturity: 'float | None' = None, confidence: 'float' = 0.95) -> 'MonteCarloPriceResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "monte_carlo_value_at_risk",
+      "signature": "(losses: 'Any', level: 'float' = 0.95) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "nelson_siegel_yield",
+      "signature": "(maturity: 'ArrayLike', beta0: 'float', beta1: 'float', beta2: 'float', tau: 'float')",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "no_arbitrage_curve_diagnostics",
+      "signature": "(curve: 'DiscountCurve', *, tolerance: 'float' = 1e-10) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "normal_samples",
+      "signature": "(mean: 'float' = 0.0, standard_deviation: 'float' = 1.0, size: 'int | tuple[int, ...]' = 10000, *, random_state: 'int | None' = 0) -> 'Array'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "ois_par_rate",
+      "signature": "(discount: 'DiscountCurve', start: 'float', end: 'float', *, fixed_frequency: 'int' = 1) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "ois_pv",
+      "signature": "(discount: 'DiscountCurve', start: 'float', end: 'float', fixed_rate: 'float', *, notional: 'float' = 1.0, fixed_frequency: 'int' = 1, position: 'str' = 'payer') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "open_lab",
+      "signature": "(source: 'Any' = None, *, provider: 'str | None' = None, symbols: 'str | Sequence[str] | None' = None, date_column: 'str | None' = None, columns: 'Sequence[str] | None' = None, missing_data: 'str' = 'raise', **kwargs: 'Any')",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "ornstein_uhlenbeck",
+      "signature": "(initial: 'float' = 0.0, speed: 'float' = 2.0, mean: 'float' = 0.0, volatility: 'float' = 0.2, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "paper_trade",
+      "signature": "(prices: 'pd.DataFrame', target_weights: 'pd.DataFrame', *, initial_capital: 'float' = 100000.0, commission_bps: 'float' = 0.0, slippage_bps: 'float' = 0.0, policy: 'RiskPolicy | None' = None, annualization: 'int' = 252) -> 'PaperTradingResult'",
+      "kind": "callable",
+      "module": "asrquant.trading"
+    },
+    {
+      "name": "parkinson_volatility",
+      "signature": "(high: 'pd.Series', low: 'pd.Series', window: 'int' = 21, annualization: 'int' = 252) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.volatility"
+    },
+    {
+      "name": "payment_schedule",
+      "signature": "(start: 'float', end: 'float', frequency: 'int' = 2) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "price_option",
+      "signature": "(model: 'str' = 'black_scholes', **kwargs) -> 'OptionPrice'",
+      "kind": "callable",
+      "module": "asrquant.derivatives"
+    },
+    {
+      "name": "projection_curve_from_discount",
+      "signature": "(discount: 'DiscountCurve', tenor: 'float', *, name: 'str | None' = None) -> 'ForwardCurve'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "proportional_transaction_cost",
+      "signature": "(prices: 'Any', positions: 'Any', cost_rate: 'float', *, initial_position: 'float | Array' = 0.0) -> 'Array'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "rate_from_future_price",
+      "signature": "(price: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "rate_future_price",
+      "signature": "(rate: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "rates_curriculum",
+      "signature": "() -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "rates_exercises",
+      "signature": "(*, level: 'str | None' = None, topic: 'str | None' = None) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "rbf_interpolation",
+      "signature": "(x: 'Any', y: 'Any', *, kernel: 'str' = 'thin_plate_spline', smoothing: 'float' = 0.0, epsilon: 'float | None' = None) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "read_table",
+      "signature": "(path: 'str | Path', **kwargs: 'Any') -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "realized_volatility",
+      "signature": "(returns: 'pd.Series', window: 'int' = 21, annualization: 'int' = 252) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.volatility"
+    },
+    {
+      "name": "regime_switching_prices",
+      "signature": "(periods: 'int' = 1500, assets: 'int' = 4, start: 'float' = 100.0, annualization: 'int' = 252, random_state: 'int | None' = 7) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "regression_metrics",
+      "signature": "(actual: 'Any', predicted: 'Any') -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "report",
+      "signature": "(value: 'Any', output: 'str | Path', *, title: 'str | None' = None) -> 'Path'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "resample_ohlcv",
+      "signature": "(data: 'pd.DataFrame', rule: 'str') -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "research_note_template",
+      "signature": "(candidate: 'ResearchCandidate') -> 'str'",
+      "kind": "callable",
+      "module": "asrquant.research_ops"
+    },
+    {
+      "name": "research_project",
+      "signature": "(*, papers: 'str | Path | Sequence[str | Path] | None' = None, hypothesis: 'str | EconomicHypothesis | None' = None, topic: 'str | None' = None, name: 'str' = 'ASRQuant research project') -> 'ResearchProject'",
+      "kind": "callable",
+      "module": "asrquant.workflow"
+    },
+    {
+      "name": "resolve_estimator",
+      "signature": "(estimator: 'Any' = 'ridge', *, task: 'str' = 'regression', model_params: 'dict[str, Any] | None' = None)",
+      "kind": "callable",
+      "module": "asrquant.machine_learning"
+    },
+    {
+      "name": "response_regression",
+      "signature": "(x: 'Any', y: 'Any', *, method: 'str' = 'polynomial', degree: 'int' = 2, alpha: 'float' = 1.0) -> 'ApproximationResult'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "run_backtest",
+      "signature": "(prices: 'pd.Series | pd.DataFrame', target_weights: 'pd.Series | pd.DataFrame', spec: 'BacktestSpec | None' = None) -> 'BacktestResult'",
+      "kind": "callable",
+      "module": "asrquant.backtest"
+    },
+    {
+      "name": "run_monte_carlo",
+      "signature": "(generator: 'Generator', quantity: 'Quantity | None' = None, *, n_scenarios: 'int' = 10000, estimator: 'Reducer' = 'mean', level: 'float' = 0.95, confidence: 'float' = 0.95, random_state: 'int | None' = 0, parameters: 'Mapping[str, Any] | None' = None, keep_scenarios: 'bool' = True) -> 'MonteCarloResult'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "sample_variance",
+      "signature": "(values: 'Any') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "save",
+      "signature": "(value: 'Any', path: 'str | Path', kind: 'str | None' = None, *, plot_kwargs: 'dict[str, Any] | None' = None, save_kwargs: 'dict[str, Any] | None' = None, **kwargs: 'Any') -> 'Path'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "series",
+      "signature": "(data: 'Any' = None, *, index: 'Any' = None, name: 'str | None' = None) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "show",
+      "signature": "(value: 'Any', kind: 'str | None' = None, **kwargs: 'Any') -> 'PlotHandle'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "simple_returns",
+      "signature": "(prices: 'pd.Series | pd.DataFrame') -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.data"
+    },
+    {
+      "name": "simulate",
+      "signature": "(model: 'str' = 'gbm', **kwargs) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "simulate_gbm",
+      "signature": "(spot: 'float', drift: 'float', volatility: 'float', maturity: 'float', steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "standard_error",
+      "signature": "(values: 'Any') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "stationary_bootstrap",
+      "signature": "(returns: 'pd.Series | pd.DataFrame', samples: 'int' = 1000, expected_block: 'float' = 20.0, random_state: 'int | None' = 0) -> 'np.ndarray'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "strip_caplet_volatilities",
+      "signature": "(discount: 'DiscountCurve', periods: 'Sequence[tuple[float, float]]', strike: 'float', cap_prices: 'Sequence[float]', *, notional: 'float' = 1.0, model: 'str' = 'black76', projection: 'ForwardCurve | None' = None, shift: 'float' = 0.0) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "summary_metrics",
+      "signature": "(returns: 'pd.Series | Iterable[float]', annualization: 'int' = 252, risk_free_rate: 'float' = 0.0, benchmark: 'pd.Series | Iterable[float] | None' = None, turnover: 'pd.Series | Iterable[float] | None' = None) -> 'pd.Series'",
+      "kind": "callable",
+      "module": "asrquant.metrics"
+    },
+    {
+      "name": "surface_from_dataframe",
+      "signature": "(frame: 'pd.DataFrame', *, x: 'str', y: 'str', z: 'str', frame_col: 'str | None' = None, frame_cols: 'Sequence[str] | None' = None, x_name: 'str | None' = None, y_name: 'str | None' = None, z_name: 'str | None' = None, frame_name: 'str | None' = None, agg: 'str | Callable[[pd.Series], float]' = 'mean') -> 'SurfaceResult'",
+      "kind": "callable",
+      "module": "asrquant.surfaces"
+    },
+    {
+      "name": "surface_gradient",
+      "signature": "(surface: 'SurfaceResult', *, frame: 'int | None' = None) -> 'dict[str, SurfaceResult]'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "surface_hessian",
+      "signature": "(surface: 'SurfaceResult', *, frame: 'int | None' = None) -> 'dict[str, SurfaceResult]'",
+      "kind": "callable",
+      "module": "asrquant.approximation"
+    },
+    {
+      "name": "svensson_yield",
+      "signature": "(maturity: 'ArrayLike', beta0: 'float', beta1: 'float', beta2: 'float', beta3: 'float', tau1: 'float', tau2: 'float')",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "swap_annuity",
+      "signature": "(curve: 'DiscountCurve', start: 'float', end: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "swap_dv01",
+      "signature": "(discount: 'DiscountCurve', start: 'float', end: 'float', fixed_rate: 'float', *, notional: 'float' = 1.0, fixed_frequency: 'int' = 2, position: 'str' = 'payer', bump: 'float' = 0.0001) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "swap_par_rate",
+      "signature": "(discount: 'DiscountCurve', start: 'float', end: 'float', *, fixed_frequency: 'int' = 2, projection: 'ForwardCurve | None' = None) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "swap_pv",
+      "signature": "(discount: 'DiscountCurve', start: 'float', end: 'float', fixed_rate: 'float', *, notional: 'float' = 1.0, fixed_frequency: 'int' = 2, position: 'str' = 'payer', projection: 'ForwardCurve | None' = None) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "swaption_price",
+      "signature": "(discount: 'DiscountCurve', expiry: 'float', swap_end: 'float', strike: 'float', volatility: 'float', *, notional: 'float' = 1.0, fixed_frequency: 'int' = 2, option: 'str' = 'payer', model: 'str' = 'black76', projection: 'ForwardCurve | None' = None, shift: 'float' = 0.0) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "technical_features",
+      "signature": "(prices: 'pd.Series', windows=(5, 20, 63)) -> 'pd.DataFrame'",
+      "kind": "callable",
+      "module": "asrquant.machine_learning"
+    },
+    {
+      "name": "uniform_inverse_transform",
+      "signature": "(quantile_function: 'Callable[[Array], Any]', size: 'int | tuple[int, ...]', *, random_state: 'int | None' = 0) -> 'Array'",
+      "kind": "callable",
+      "module": "asrquant.monte_carlo"
+    },
+    {
+      "name": "vasicek_process",
+      "signature": "(initial: 'float' = 0.03, speed: 'float' = 1.0, mean: 'float' = 0.04, volatility: 'float' = 0.01, maturity: 'float' = 1.0, steps: 'int' = 252, paths: 'int' = 1000, random_state: 'int | None' = 0) -> 'SimulationResult'",
+      "kind": "callable",
+      "module": "asrquant.simulation"
+    },
+    {
+      "name": "vasicek_zero_coupon_bond",
+      "signature": "(r_t: 'float', t: 'float', maturity: 'float', kappa: 'float', theta: 'float', sigma: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "visualize",
+      "signature": "(value: 'Any', kind: 'str | None' = None, **kwargs: 'Any') -> 'PlotHandle'",
+      "kind": "callable",
+      "module": "asrquant.easy"
+    },
+    {
+      "name": "walk_forward_fit",
+      "signature": "(estimator: 'Any' = 'ridge', features: 'pd.DataFrame | None' = None, target: 'pd.Series | None' = None, *, train_size: 'int', test_size: 'int', step: 'int | None' = None, gap: 'int' = 0, expanding: 'bool' = True, task: 'str' = 'regression', model_params: 'dict[str, Any] | None' = None) -> 'WalkForwardMLResult'",
+      "kind": "callable",
+      "module": "asrquant.machine_learning"
+    },
+    {
+      "name": "weekly_cycle",
+      "signature": "(board: 'ResearchBoard', identifier: 'str | int', *, launch_friday: 'date | str | None' = None, name: 'str | None' = None) -> 'WeeklyResearchCycle'",
+      "kind": "callable",
+      "module": "asrquant.research_ops"
+    },
+    {
+      "name": "year_fraction",
+      "signature": "(start: 'date | datetime | str', end: 'date | datetime | str', convention: 'str' = 'ACT/365F') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "yield_curve_pca",
+      "signature": "(yields: 'pd.DataFrame', n_components: 'int' = 3, *, differences: 'bool' = True) -> 'dict[str, Any]'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "yield_to_maturity",
+      "signature": "(price: 'float', face: 'float', coupon_rate: 'float', maturity: 'float', frequency: 'int' = 2) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "zero_coupon_inflation_rate",
+      "signature": "(index_start: 'float', index_end: 'float', maturity: 'float') -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "zero_coupon_inflation_swap_pv",
+      "signature": "(discount: 'DiscountCurve', maturity: 'float', fixed_rate: 'float', index_ratio: 'float', *, notional: 'float' = 1.0, receive_inflation: 'bool' = True) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    },
+    {
+      "name": "zero_coupon_price",
+      "signature": "(face: 'float', rate: 'float', maturity: 'float', compounding: 'int | None' = None) -> 'float'",
+      "kind": "callable",
+      "module": "asrquant.fixed_income"
+    },
+    {
+      "name": "zero_rate_from_discount",
+      "signature": "(discount: 'ArrayLike', maturity: 'ArrayLike', compounding: 'str | int' = 'continuous')",
+      "kind": "callable",
+      "module": "asrquant.interest_rates"
+    }
+  ]
+}
