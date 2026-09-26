@@ -21,8 +21,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat release-bundles/v1.3.0/chunk-* > /tmp/asrquant130.b64
+          cat release-bundles/v1.3.0/chunk-* | tr -cd 'A-Za-z0-9+/=' > /tmp/asrquant130.b64
           base64 --decode /tmp/asrquant130.b64 > /tmp/asrquant130.tar.xz
+          xz -t /tmp/asrquant130.tar.xz
           mkdir -p /tmp/asr130
           tar -xJf /tmp/asrquant130.tar.xz -C /tmp/asr130
           rm -rf /tmp/wheel src/asrquant
