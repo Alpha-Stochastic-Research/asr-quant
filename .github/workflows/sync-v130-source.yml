@@ -21,10 +21,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          : > /tmp/asrquant130.tar.xz
-          for f in release-bundles/v1.3.0/chunk-*; do
-            tr -cd 'A-Za-z0-9+/=' < "$f" | base64 --decode >> /tmp/asrquant130.tar.xz
-          done
+          python - <<'PY'
+          from pathlib import Path
+          import base64, re
+          out = bytearray()
+          chunks = sorted(Path('release-bundles/v1.3.0').glob('chunk-*'))
+          if not chunks:
+              raise SystemExit('No release chunks found')
+          for path in chunks:
+              raw = path.read_text(errors='ignore')
+              text = re.sub(r'[^A-Za-z0-9+/=]', '', raw).replace('=', '')
+              text += '=' * ((4 - len(text) % 4) % 4)
+              try:
+                  out.extend(base64.b64decode(text, validate=False))
+              except Exception as exc:
+                  raise SystemExit(f'Failed to decode {path}: {exc}')
+          Path('/tmp/asrquant130.tar.xz').write_bytes(out)
+          print(f'Decoded {len(chunks)} chunks -> {len(out)} bytes')
+          PY
           xz -t /tmp/asrquant130.tar.xz
           mkdir -p /tmp/asr130
           tar -xJf /tmp/asrquant130.tar.xz -C /tmp/asr130
