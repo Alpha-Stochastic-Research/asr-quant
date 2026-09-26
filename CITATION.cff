@@ -8,8 +8,8 @@ authors:
   - family-names: "Mishra"
     given-names: "Srijan"
   - name: "Alpha Stochastic Research"
-version: 1.3.0
-date-released: "2026-09-03"
+version: 1.3.1
+date-released: "2026-09-26"
 license: MIT
 repository-code: "https://github.com/Alpha-Stochastic-Research/asr-quant"
 url: "https://www.asr-lab.online"
