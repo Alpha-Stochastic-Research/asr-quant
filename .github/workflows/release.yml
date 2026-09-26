@@ -3,25 +3,50 @@ name: Release
 on:
   release:
     types: [published]
+  push:
+    branches: [main]
+    paths:
+      - "RELEASE_v1.3.0_DEPLOY"
 
 permissions:
   contents: read
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'release' && github.event.release.tag_name || 'v1.3.0' }}
 
 jobs:
   build:
     name: Build, validate, and attest distributions
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
       attestations: write
 
     steps:
-      - name: Check out tagged source
+      - name: Check out release source
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Create v1.3.0 GitHub Release for deploy marker
+        if: github.event_name == 'push'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "Release ${RELEASE_TAG} already exists"
+          else
+            gh release create "${RELEASE_TAG}" \
+              --target "${GITHUB_SHA}" \
+              --title "ASRQuant 1.3.0" \
+              --notes-file RELEASE_NOTES_1.3.0.md \
+              --repo "${GITHUB_REPOSITORY}"
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -35,7 +60,7 @@ jobs:
           python -m pip install build twine cyclonedx-bom
 
       - name: Verify release tag and package version
-        run: python scripts/check_release.py "${{ github.event.release.tag_name }}"
+        run: python scripts/check_release.py "${RELEASE_TAG}"
 
       - name: Build distributions from a clean directory
         run: |
@@ -58,7 +83,7 @@ jobs:
           mkdir -p release-metadata
           cyclonedx-py environment \
             --output-format JSON \
-            --output-file release-metadata/asrquant-${{ github.event.release.tag_name }}-sbom.cdx.json \
+            --output-file "release-metadata/asrquant-${RELEASE_TAG}-sbom.cdx.json" \
             .release-runtime/bin/python
           sha256sum dist/*.whl dist/*.tar.gz > release-metadata/SHA256SUMS.txt
 
@@ -75,7 +100,7 @@ jobs:
           subject-path: |
             dist/*.whl
             dist/*.tar.gz
-          sbom-path: release-metadata/asrquant-${{ github.event.release.tag_name }}-sbom.cdx.json
+          sbom-path: release-metadata/asrquant-${{ env.RELEASE_TAG }}-sbom.cdx.json
 
       - name: Upload Python distributions
         uses: actions/upload-artifact@v5
@@ -144,7 +169,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           set -euo pipefail
           shopt -s nullglob
