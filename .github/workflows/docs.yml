@@ -79,26 +79,29 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Verify branded ASRQuant documentation route
+      - name: Verify branded ASRQuant documentation routes
         env:
-          BRANDED_URL: https://docs.asr-lab.online/asrquant/
-          ASSET_BASE: https://alpha-stochastic-research.github.io/asr-quant/
+          ROOT_URL: https://docs.asr-lab.online/
+          LEGACY_URL: https://docs.asr-lab.online/asrquant/
         run: |
           set -euo pipefail
-          test_url="${BRANDED_URL}?build=${GITHUB_SHA}"
           curl --fail --silent --show-error --location \
             --retry 12 --retry-delay 5 --retry-all-errors \
-            "$test_url" -o /tmp/asrquant-docs.html
-          grep -q 'ASRQuant Documentation' /tmp/asrquant-docs.html
-          grep -q "${ASSET_BASE}assets/stylesheets/" /tmp/asrquant-docs.html
-          grep -q "${ASSET_BASE}assets/javascripts/" /tmp/asrquant-docs.html
-          grep -q "${ASSET_BASE}assets/brand/asrquant-mark.svg" /tmp/asrquant-docs.html
-          if grep -Eq 'href="(?:\.\./)*assets/stylesheets/|src="(?:\.\./)*assets/javascripts/' /tmp/asrquant-docs.html; then
-            echo 'Branded route still exposes relative MkDocs core assets.' >&2
-            exit 1
-          fi
+            "${ROOT_URL}?build=${GITHUB_SHA}" -o /tmp/root.html
+          grep -q 'ASRQuant Documentation' /tmp/root.html
+          grep -q "${ROOT_URL}assets/stylesheets/" /tmp/root.html
+          grep -q "${ROOT_URL}assets/javascripts/" /tmp/root.html
+          grep -q "${ROOT_URL}assets/brand/asrquant-mark.svg" /tmp/root.html
+
+          curl --fail --silent --show-error --location \
+            --retry 12 --retry-delay 5 --retry-all-errors \
+            "${LEGACY_URL}?build=${GITHUB_SHA}" -o /tmp/legacy.html
+          grep -q 'ASRQuant Documentation' /tmp/legacy.html
+          grep -q '<base href="https://docs.asr-lab.online/">' /tmp/legacy.html
+          grep -q "${ROOT_URL}assets/stylesheets/" /tmp/legacy.html
+
           curl --fail --silent --show-error --location \
             --retry 5 --retry-delay 3 --retry-all-errors \
-            "${ASSET_BASE}assets/brand/asrquant-mark.svg" -o /tmp/asrquant-mark.svg
+            "${ROOT_URL}assets/brand/asrquant-mark.svg" -o /tmp/asrquant-mark.svg
           grep -q '<svg' /tmp/asrquant-mark.svg
-          echo 'Branded ASRQuant docs route and static package assets are healthy.'
+          echo 'ASRQuant docs root and legacy /asrquant/ route are healthy.'
