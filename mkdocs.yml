@@ -1,7 +1,7 @@
 site_name: ASRQuant Documentation
 site_description: Auditable quantitative finance research infrastructure by Alpha Stochastic Research.
 site_author: Alpha Stochastic Research
-site_url: https://alpha-stochastic-research.github.io/asr-quant/
+site_url: https://docs.asr-lab.online/asrquant/
 repo_url: https://github.com/Alpha-Stochastic-Research/asr-quant
 repo_name: Alpha-Stochastic-Research/asr-quant
 edit_uri: edit/main/docs/
