@@ -4,43 +4,16 @@
   --asrquant-ink:#08070d;
 }
 
-/* ASRQuant public documentation identity. */
+/* ASRQuant public documentation identity.
+   Keep branding strictly inside MkDocs' native chrome so documentation
+   layout and content flow remain untouched. */
 .md-header__button.md-logo img,
 .md-header__button.md-logo svg{
-  width:2rem;
-  height:2rem;
-}
-
-.md-content__inner:has(> h1#asrquant)::before{
-  content:"";
-  display:block;
-  width:min(100%,980px);
-  aspect-ratio:1200/420;
-  margin:0 0 2rem;
-  border:1px solid color-mix(in srgb,var(--asrquant-purple) 28%,transparent);
-  border-radius:1.15rem;
-  background:#05050a url('../assets/brand/asrquant-logo.svg') center/cover no-repeat;
-  box-shadow:0 24px 70px rgba(15,8,30,.18);
-}
-
-.md-content__inner:has(> h1#asrquant) > h1#asrquant{
-  margin-top:.25rem;
-  font-weight:700;
-  letter-spacing:-.035em;
+  width:1.85rem;
+  height:1.85rem;
+  object-fit:contain;
 }
 
 .md-content a{
   text-underline-offset:.16em;
-}
-
-[data-md-color-scheme="slate"] .md-content__inner:has(> h1#asrquant)::before{
-  border-color:rgba(167,139,250,.28);
-  box-shadow:0 28px 80px rgba(0,0,0,.28);
-}
-
-@media(max-width:700px){
-  .md-content__inner:has(> h1#asrquant)::before{
-    border-radius:.85rem;
-    margin-bottom:1.4rem;
-  }
 }
