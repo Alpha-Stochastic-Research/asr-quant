@@ -1,16 +1,14 @@
-"""Rewrite generated MkDocs asset URLs to the canonical public Pages host.
+"""Make generated MkDocs pages safe behind the branded ASRQuant docs route.
 
-Why this exists
----------------
-The ASR website links to the documentation through a branded docs route. Some
-proxy/CDN configurations can serve the generated HTML while failing to serve
-MkDocs' relative CSS/JS/image assets from the same path. The result is a raw,
-unstyled document even though the MkDocs build itself is valid.
+The branded route is https://docs.asr-lab.online/asrquant/. Its HTML is served
+through a proxy/CDN path, while the immutable static MkDocs assets are published
+by GitHub Pages. Relative asset URLs can therefore resolve against the branded
+path and fail, leaving the page completely unstyled.
 
-This post-build step keeps documentation navigation links relative, but rewrites
-static theme/package assets and the Material search worker base to the canonical
-GitHub Pages origin. That makes the generated site render correctly both on the
-canonical Pages URL and when its HTML is exposed through the branded docs route.
+Keep navigation and canonical page identity on the branded docs route, but point
+static CSS/JS/images and the search index at the GitHub Pages origin. This keeps
+the public URL branded without depending on the proxy to mirror every static
+asset path.
 """
 
 from __future__ import annotations
@@ -20,7 +18,8 @@ import re
 from pathlib import Path
 
 SITE = Path("site")
-CANONICAL = "https://alpha-stochastic-research.github.io/asr-quant/"
+BRANDED_BASE = "https://docs.asr-lab.online/asrquant/"
+ASSET_BASE = "https://alpha-stochastic-research.github.io/asr-quant/"
 
 ATTR_RE = re.compile(
     r'(?P<prefix>\b(?:href|src)=["\'])(?P<path>(?:\.\./)*(?:assets|stylesheets)/[^"\']+)(?P<suffix>["\'])'
@@ -34,7 +33,7 @@ CONFIG_RE = re.compile(
 def absolute_asset(path: str) -> str:
     while path.startswith("../"):
         path = path[3:]
-    return CANONICAL + path.lstrip("/")
+    return ASSET_BASE + path.lstrip("/")
 
 
 def rewrite_html(path: Path) -> None:
@@ -51,10 +50,12 @@ def rewrite_html(path: Path) -> None:
 
     def rewrite_config(match: re.Match[str]) -> str:
         config = json.loads(match.group("json"))
-        config["base"] = CANONICAL
+        config["base"] = BRANDED_BASE
         search = str(config.get("search") or "")
         if search:
-            config["search"] = absolute_asset(search)
+            while search.startswith("../"):
+                search = search[3:]
+            config["search"] = ASSET_BASE + search.lstrip("/")
         return (
             match.group(1)
             + json.dumps(config, ensure_ascii=False, separators=(",", ":"))
@@ -78,16 +79,22 @@ def main() -> None:
 
     index = (SITE / "index.html").read_text(encoding="utf-8")
     required = [
-        CANONICAL + "assets/stylesheets/",
-        CANONICAL + "assets/javascripts/",
-        CANONICAL + "assets/brand/asrquant-mark.svg",
-        f'"base":"{CANONICAL}"',
+        ASSET_BASE + "assets/stylesheets/",
+        ASSET_BASE + "assets/javascripts/",
+        ASSET_BASE + "assets/brand/asrquant-mark.svg",
+        f'"base":"{BRANDED_BASE}"',
     ]
     missing = [token for token in required if token not in index]
     if missing:
-        raise SystemExit("Asset rewrite validation failed: " + ", ".join(missing))
+        raise SystemExit("Branded docs rewrite validation failed: " + ", ".join(missing))
 
-    print(f"Rewrote canonical static asset URLs in {len(pages)} documentation pages.")
+    if 'href="assets/' in index or 'src="assets/' in index:
+        raise SystemExit("Relative root assets remain in generated branded docs index")
+
+    print(
+        f"Prepared {len(pages)} documentation pages for {BRANDED_BASE} "
+        f"with static assets served from {ASSET_BASE}."
+    )
 
 
 if __name__ == "__main__":
