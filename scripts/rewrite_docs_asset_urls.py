@@ -1,14 +1,16 @@
-"""Make generated MkDocs pages safe behind the branded ASRQuant docs route.
+"""Prepare generated MkDocs pages for the ASRQuant custom documentation domain.
 
-The branded route is https://docs.asr-lab.online/asrquant/. Its HTML is served
-through a proxy/CDN path, while the immutable static MkDocs assets are published
-by GitHub Pages. Relative asset URLs can therefore resolve against the branded
-path and fail, leaving the page completely unstyled.
+The ASRQuant GitHub Pages custom domain is mounted at the host root:
+https://docs.asr-lab.online/
 
-Keep navigation and canonical page identity on the branded docs route, but point
-static CSS/JS/images and the search index at the GitHub Pages origin. This keeps
-the public URL branded without depending on the proxy to mirror every static
-asset path.
+Historically the public website also linked to `/asrquant`. Keep that legacy URL
+working by publishing an alias page at `site/asrquant/index.html`. The alias is a
+copy of the documentation home page with a `<base>` element pointing at the host
+root, so its navigation resolves to the real root pages instead of nonexistent
+`/asrquant/...` paths.
+
+All static MkDocs assets are rewritten to absolute URLs on the branded domain so
+they remain correct from both `/` and `/asrquant/`.
 """
 
 from __future__ import annotations
@@ -18,8 +20,8 @@ import re
 from pathlib import Path
 
 SITE = Path("site")
-BRANDED_BASE = "https://docs.asr-lab.online/asrquant/"
-ASSET_BASE = "https://alpha-stochastic-research.github.io/asr-quant/"
+BRANDED_BASE = "https://docs.asr-lab.online/"
+ASSET_BASE = BRANDED_BASE
 
 ATTR_RE = re.compile(
     r'(?P<prefix>\b(?:href|src)=["\'])(?P<path>(?:\.\./)*(?:assets|stylesheets)/[^"\']+)(?P<suffix>["\'])'
@@ -66,6 +68,24 @@ def rewrite_html(path: Path) -> None:
     path.write_text(source, encoding="utf-8")
 
 
+def build_legacy_alias() -> None:
+    index_path = SITE / "index.html"
+    alias_dir = SITE / "asrquant"
+    alias_dir.mkdir(parents=True, exist_ok=True)
+    source = index_path.read_text(encoding="utf-8")
+    source = source.replace(
+        "<head>",
+        f'<head><base href="{BRANDED_BASE}">',
+        1,
+    )
+    source = source.replace(
+        '<link rel="canonical" href="https://docs.asr-lab.online/">',
+        '<link rel="canonical" href="https://docs.asr-lab.online/">',
+        1,
+    )
+    (alias_dir / "index.html").write_text(source, encoding="utf-8")
+
+
 def main() -> None:
     if not SITE.exists():
         raise SystemExit("site/ does not exist; run mkdocs build first")
@@ -77,7 +97,10 @@ def main() -> None:
     for page in pages:
         rewrite_html(page)
 
+    build_legacy_alias()
+
     index = (SITE / "index.html").read_text(encoding="utf-8")
+    alias = (SITE / "asrquant" / "index.html").read_text(encoding="utf-8")
     required = [
         ASSET_BASE + "assets/stylesheets/",
         ASSET_BASE + "assets/javascripts/",
@@ -88,12 +111,14 @@ def main() -> None:
     if missing:
         raise SystemExit("Branded docs rewrite validation failed: " + ", ".join(missing))
 
-    if 'href="assets/' in index or 'src="assets/' in index:
-        raise SystemExit("Relative root assets remain in generated branded docs index")
+    if f'<base href="{BRANDED_BASE}">' not in alias:
+        raise SystemExit("Legacy /asrquant alias is missing its root base URL")
+    if 'ASRQuant Documentation' not in alias:
+        raise SystemExit("Legacy /asrquant alias does not contain the docs home page")
 
     print(
-        f"Prepared {len(pages)} documentation pages for {BRANDED_BASE} "
-        f"with static assets served from {ASSET_BASE}."
+        f"Prepared {len(pages)} documentation pages for {BRANDED_BASE} and "
+        "published the legacy /asrquant/ alias."
     )
 
 
