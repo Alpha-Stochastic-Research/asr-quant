@@ -12,6 +12,8 @@ copyright: >-
 theme:
   name: material
   language: en
+  logo: assets/brand/asrquant-mark.svg
+  favicon: assets/brand/asrquant-mark.svg
   features:
     - navigation.tabs
     - navigation.sections
@@ -36,6 +38,9 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+
+extra_css:
+  - stylesheets/asrquant-brand.css
 
 plugins:
   - search
