@@ -10,6 +10,7 @@ on:
       - 'pyproject.toml'
       - 'mkdocs.yml'
       - 'scripts/generate_docs.py'
+      - 'scripts/rewrite_docs_asset_urls.py'
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
@@ -19,6 +20,7 @@ on:
       - 'pyproject.toml'
       - 'mkdocs.yml'
       - 'scripts/generate_docs.py'
+      - 'scripts/rewrite_docs_asset_urls.py'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -48,7 +50,9 @@ jobs:
       - name: Generate source-derived API reference
         run: python scripts/generate_docs.py
       - name: Build documentation
-        run: mkdocs build --strict
+        run: |
+          mkdocs build --strict
+          python scripts/rewrite_docs_asset_urls.py
       - name: Configure Pages
         if: github.event_name == 'push'
         uses: actions/configure-pages@v5
