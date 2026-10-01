@@ -4,138 +4,108 @@
 
 ### Auditable quantitative finance research in Python
 
-**Research · Modelling · Analysis · Reproducibility**
-
-`pip install asrquant`
-
-</div>
-
----
-
-ASRQuant is the open-source quantitative-finance toolkit developed by **Alpha Stochastic Research (ASR)**. It connects data, hypothesis discovery, statistical research, fixed income, derivatives, portfolio construction, risk, factor models, market microstructure, backtesting, machine learning, simulation, visualization and reproducibility in one Python package.
-
-The design principle is simple: **make quantitative workflows concise without hiding assumptions that materially change the result.**
-
-[**Documentation**](https://alpha-stochastic-research.github.io/asr-quant/) · [**Repository**](https://github.com/Alpha-Stochastic-Research/asr-quant)
-
-> **Stable release: 1.3.0.** The 1.0 paper contract, 1.1 Research Discovery / Interest Rates stack, and 1.2 canonical research API are preserved. Version 1.3 adds market-convention infrastructure, instrument/curve contracts, quote-space curve risk, credit foundations, advanced research validation, point-in-time data snapshots, experiment lineage, scenario and cost models, calibration/sensitivity frameworks, and stronger API compatibility controls. Guarded live-broker components remain fail-closed and require deployment-specific authorization.
-
-## Documentation
-
-Documentation is rebuilt automatically from the repository. Changes to source code or documentation on `main` trigger a strict MkDocs build, regenerate the source-derived API reference and deploy the resulting site through GitHub Pages. Pull requests run the same build as a validation gate without publishing.
-
-## Install
-
-```bash
-pip install asrquant
-```
-
-Upgrade:
+**Fixed Income · Derivatives · Backtesting · Risk · Validation · Reproducibility**
 
 ```bash
 pip install --upgrade asrquant
 ```
 
-Optional research dependencies:
+[![PyPI](https://img.shields.io/pypi/v/asrquant?label=PyPI)](https://pypi.org/project/asrquant/)
+[![Python](https://img.shields.io/pypi/pyversions/asrquant)](https://pypi.org/project/asrquant/)
+[![License](https://img.shields.io/github/license/Alpha-Stochastic-Research/asr-quant)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Alpha-Stochastic-Research/asr-quant?style=flat)](https://github.com/Alpha-Stochastic-Research/asr-quant/stargazers)
+[![Downloads](https://static.pepy.tech/badge/asrquant/month)](https://pepy.tech/project/asrquant)
 
-```bash
-pip install "asrquant[data]"          # Yahoo Finance, Excel, Parquet, Feather
-pip install "asrquant[providers]"     # HTTP market-data / broker connectivity
-pip install "asrquant[visualization]" # Matplotlib, Plotly and HTML reporting
-pip install "asrquant[ml]"            # scikit-learn, SHAP, HMM extensions
-pip install "asrquant[literature]"    # PDF literature ingestion
-pip install "asrquant[optimization]"  # CVXPY extensions
-pip install "asrquant[volatility]"    # ARCH / GARCH
-pip install "asrquant[all]"
-```
+[**Try the real-world notebook**](notebooks/ASRQuant_v1.3.0_Public_Practical_Case.ipynb) ·
+[**Open in Colab**](https://colab.research.google.com/github/Alpha-Stochastic-Research/asr-quant/blob/main/notebooks/ASRQuant_v1.3.0_Public_Practical_Case.ipynb) ·
+[**Documentation**](https://docs.asr-lab.online/) ·
+[**PyPI**](https://pypi.org/project/asrquant/) ·
+[**Paper**](paper/ASRQuant_paper.pdf)
 
-ASRQuant 1.3.0 declares and validates Python **3.10–3.13** in the release compatibility matrix.
-
-## One import
-
-```python
-import asrquant as asr
-
-print(asr.__version__)
-# 1.3.0
-```
-
-The recommended public namespaces are intentionally predictable:
-
-```text
-asr.data           data ingestion, validation and providers
-asr.hypotheses     data/literature hypothesis discovery and novelty audit
-asr.alpha          cross-sectional signal research
-asr.factors        PCA, exposures and factor-risk decomposition
-asr.risk           VaR, ES, EVT, drawdown and portfolio risk
-asr.microstructure spread, microprice, OFI, Kyle lambda and liquidity analytics
-asr.validation     CPCV, PBO, Reality Check, SPA, leakage and multiverse analysis
-asr.scenarios      cross-domain deterministic stress scenarios
-asr.credit         hazard curves and CDS analytics
-asr.backtesting    auditable backtesting
-asr.portfolio      optimization, constraints and risk budgeting
-asr.covariance     covariance estimators and holdout comparison
-asr.costs          reusable transaction-cost and impact models
-asr.stats          econometrics, bootstrap and inference
-asr.ml             leakage-aware walk-forward ML
-asr.options        derivative pricing and Greeks
-asr.rates          conventions, curves, instruments, rates risk and IR derivatives
-asr.calibration    generic calibrated-model diagnostics
-asr.sensitivities finite-difference first/second/cross sensitivities
-asr.dependence     Gaussian and Student-t copula research
-asr.regimes        volatility, change-point and optional HMM regimes
-asr.performance    factor and Brinson attribution
-asr.stochastic     stochastic processes
-asr.mc             Monte Carlo and variance-reduction tools
-asr.vol            volatility modelling
-asr.visuals        visualization catalogue
-asr.research       experiments, reports and reproducible research workflow
-asr.trading        paper trading and guarded execution primitives
-```
-
-Legacy 1.x entry points remain available for existing notebooks.
+</div>
 
 ---
 
+ASRQuant is the open-source quantitative-finance toolkit developed by **Alpha Stochastic Research (ASR)** for building **reviewable, reproducible and auditable research workflows**.
 
-# What is new in 1.3
+It connects market data, hypothesis discovery, fixed income, derivatives, portfolio construction, risk, backtesting, simulation, machine learning, research validation and experiment lineage through one Python package.
 
-Version 1.3 is a research-infrastructure release rather than a feature-count release. It strengthens the path from market information to a reviewable quantitative decision.
+The design principle is simple:
 
-## Independent audit corrections in the final build
+> **Make quantitative workflows concise without hiding assumptions that materially change the result.**
 
-The final source incorporates the release-candidate findings that materially affected numerical or interface behaviour: asymmetric key-rate bump partitions on uneven pillars; per-observation Sharpe scaling in PSR/DSR; explicit refusal of non-identifiable implied-volatility boundary inversions; deterministic PCA sign orientation; statsmodels 0.15 compatibility; Wilder RSI as the default convention with an explicit SMA option; fixed Gaussian-process noise contracts; Vasicek mean-reversion uncertainty reporting; and a configurable Omega threshold. Optional plotting, ML, HTTP and PDF stacks are no longer mandatory core dependencies and are imported only when their functionality is requested.
+## Start with a real case
 
-ASRQuant's quantitative-finance calculations remain native to the package: pricing, curve construction, rate risk, calibration and validation are implemented in ASRQuant rather than delegated to an external quantitative-finance engine. Numerical verification relies on analytical identities, round-trip tests, invariants, limiting cases and regression tests under explicit conventions.
-Selected native-engine contracts can also be run directly with `PYTHONPATH=src python benchmarks/native_engine_contracts.py`.
+Instead of learning ASRQuant as a catalogue of functions, start with the public practical notebook:
 
-## Market conventions, instruments and curve construction
+### ECB EUR curve → 5Y IRS → risk → validation → audit trail
+
+The notebook walks through one coherent rates workflow:
+
+1. retrieve public ECB EUR yield-curve data;
+2. validate and freeze the dataset with a fingerprint;
+3. analyse curve dynamics with PCA;
+4. build explicit curve states and market conventions;
+5. price an illustrative 5Y payer IRS;
+6. compute DV01, key-rate DV01 and quote-space PV01;
+7. explain realized P&L;
+8. run parallel / steepener / flattener stresses;
+9. test a curve research hypothesis across multiple specifications;
+10. run CPCV, PBO, Reality Check and SPA;
+11. register the experiment and export an auditable research report.
+
+**[Open the notebook →](notebooks/ASRQuant_v1.3.0_Public_Practical_Case.ipynb)**  
+**[Run it in Google Colab →](https://colab.research.google.com/github/Alpha-Stochastic-Research/asr-quant/blob/main/notebooks/ASRQuant_v1.3.0_Public_Practical_Case.ipynb)**
+
+> The public ECB sovereign curve is used as a transparent research proxy. Production EUR IRS work should use appropriate OIS discounting, projection curves, collateral conventions and live market quotes.
+
+---
+
+## What you can build with ASRQuant
+
+| Area | Core capabilities |
+|---|---|
+| **Fixed Income & IRD** | calendars, schedules, curves, deposits, FRAs, bonds, swaps, OIS, DV01, key-rate DV01, quote PV01, P&L explain |
+| **Research Validation** | CPCV, PBO, Reality Check, SPA, leakage diagnostics, multiverse analysis |
+| **Risk** | VaR, Expected Shortfall, EVT, drawdowns, scenario P&L, risk contributions |
+| **Portfolio Research** | optimization, constraints, risk budgeting, covariance comparison, transaction costs |
+| **Backtesting** | auditable backtests, implementation-sensitive research workflows, performance diagnostics |
+| **Simulation** | Monte Carlo, stochastic processes, variance-reduction tools, deterministic scenarios |
+| **Credit** | hazard curves, survival probabilities, CDS analytics, credit sensitivities |
+| **Alpha & Factors** | cross-sectional signals, IC analysis, PCA, factor exposures, risk decomposition |
+| **Market Microstructure** | spread, microprice, order-flow imbalance, Kyle lambda, liquidity analytics |
+| **Machine Learning** | leakage-aware walk-forward research, model comparison and diagnostics |
+| **Reproducible Research** | immutable data snapshots, point-in-time data, experiment registry, research graph, reports |
+
+---
+
+## Why ASRQuant
+
+### 1. Quantitative objects remain explicit
+
+Curves, conventions, instruments, market quotes, risk measures and validation outputs are inspectable research objects rather than hidden side effects.
+
+### 2. Validation is part of the workflow
+
+ASRQuant treats selection risk, leakage and specification fragility as first-class research problems.
 
 ```python
-calendar = asr.rates.Calendar("TARGET")
-schedule = asr.rates.Schedule(
-    start="2026-09-15",
-    end="2031-09-15",
-    frequency="6M",
-    calendar=calendar,
-    day_count="ACT/360",
-)
+pbo = asr.validation.probability_of_backtest_overfitting(strategy_returns)
+reality = asr.validation.reality_check(strategy_returns)
+spa = asr.validation.spa_test(strategy_returns)
+```
 
+These diagnostics are **evidence filters**, not certificates that a strategy is economically valid.
+
+### 3. Fixed-income risk can be expressed in market space
+
+```python
 builder = asr.rates.CurveBuilder.from_quotes(
-    valuation_date="2026-09-15",
     deposits={0.25: 0.0210, 0.50: 0.0220},
     swaps={1.0: 0.0230, 2.0: 0.0240, 5.0: 0.0260},
 )
 build = builder.build()
-print(build.repricing_errors)
-print(build.jacobian)
-```
 
-The curve build is not treated as successful merely because an optimizer returned: quote repricing and positive discount factors are exposed as diagnostics.
-
-## Curve and quote-space risk
-
-```python
 swap = asr.rates.InterestRateSwap(
     maturity=5.0,
     fixed_rate=0.026,
@@ -143,736 +113,191 @@ swap = asr.rates.InterestRateSwap(
 )
 
 risk = asr.rates.curve_risk(swap, build.curve, build_result=build)
+
 print(risk.dv01)
 print(risk.key_rate_dv01)
 print(risk.quote_pv01)
 ```
 
-## Research validation
-
-```python
-splits = asr.validation.combinatorial_purged_cv_splits(
-    n_samples=len(returns),
-    n_groups=6,
-    test_groups=2,
-    embargo=5,
-)
-
-pbo = asr.validation.probability_of_backtest_overfitting(strategy_returns)
-reality = asr.validation.reality_check(strategy_returns)
-spa = asr.validation.spa_test(strategy_returns)
-validation_report = asr.validation.strategy_report(strategy_returns)
-```
-
-`PBO`, Reality Check and SPA are research diagnostics, not guarantees that a strategy is economically valid. They are designed to make selection risk harder to ignore.
-
-## Point-in-time data and snapshots
+### 4. Reproducibility is part of the result
 
 ```python
 store = asr.data.DataStore("./research-data")
-snapshot = store.put("rates_panel", data, source="internal")
-reloaded = store.get("rates_panel")
+snapshot = store.put("rates_panel", data, source="ECB")
 
-pit = asr.data.PointInTimeFrame(
-    observations,
-    observation_column="observation_time",
-    available_column="available_time",
-    revision_column="revision_time",
-)
-research_view = pit.as_of("2026-09-15")
-```
-
-Snapshots retain fingerprints and schema metadata; point-in-time views separate when an observation describes the world from when it was actually available to a researcher.
-
-## Experiments, lineage and reports
-
-```python
 experiment = asr.research.Experiment(
     name="curve_signal",
-    config={"lookback": 60, "cost_bps": 5},
-    data={"market": data},
+    config={"lookback": 60},
+    data={"market": snapshot},
     seed=42,
 )
 
 registry = asr.research.ExperimentRegistry("experiments.jsonl")
 registry.add(experiment)
-
-report = asr.research.ResearchReport("curve_signal")
-report.add(experiment, name="experiment")
-report.add(pbo, name="validation")
-report.export("research_report.html")
-
-graph = asr.research.ResearchGraph()
-graph.add("data", snapshot)
-graph.add("experiment", experiment, depends_on=["data"])
-graph.add("validation", validation_report, depends_on=["experiment"])
-print(graph.stale_artifacts("data"))
 ```
 
-## Credit and scenarios
-
-```python
-hazard = asr.credit.bootstrap_hazard_curve(
-    build.curve,
-    maturities=[1, 3, 5],
-    spreads=[0.0080, 0.0110, 0.0140],
-    recovery=0.40,
-)
-cds = asr.credit.CDS(maturity=5.0, spread=0.0140, notional=1_000_000)
-print(cds.analytics(build.curve, hazard).summary)
-
-stress = asr.scenarios.steepener(25.0)
-scenario_result = asr.scenarios.run(stress, instrument=swap, curve=build.curve)
-```
-
-## Extensible adapters
-
-Internal infrastructure can be registered without replacing the ASRQuant research layer:
-
-```python
-asr.register.data_provider("internal", internal_data_provider)
-asr.register.pricer("rates", internal_rates_pricer)
-asr.register.cost_model("desk", desk_cost_model)
-```
+The package records not only the final number, but also the path that produced it.
 
 ---
 
-# Stable public API
+## Install
 
-The high-level verbs are designed to be memorable:
-
-```python
-asr.data.load(...)
-asr.data.validate(...)
-asr.hypotheses.discover(...)
-asr.backtesting.run(...)
-asr.portfolio.optimize(...)
-asr.options.price(...)
-asr.rates.analyze(...)
-asr.rates.calibrate(...)
-asr.stats.regress(...)
-asr.ml.fit(...)
-```
-
-Structured result objects expose consistent analysis helpers where applicable:
-
-```python
-result.summary
-result.to_frame()
-result.to_dict()
-```
-
----
-
-# Data
-
-ASRQuant uses one data layer for local files, public URLs and provider-backed market data.
-
-## CSV / local file
-
-```python
-prices = asr.data.load(
-    "prices.csv",
-    date_column="Date",
-)
-```
-
-Supported local formats include CSV, Parquet, Excel, JSON and Feather.
-
-## Public CSV URL
-
-```python
-macro = asr.data.load(
-    "https://example.org/data.csv",
-    date_column="DATE",
-)
-```
-
-Remote reads use an explicit bounded HTTP request and preserve the same tabular contract.
-
-## Yahoo Finance
-
-Install the data extra first:
+Core package:
 
 ```bash
-pip install "asrquant[data]"
+pip install --upgrade asrquant
 ```
 
-Then:
+Useful extras:
 
-```python
-prices = asr.data.yahoo(
-    ["SPY", "TLT", "GLD"],
-    start="2020-01-01",
-)
+```bash
+pip install "asrquant[data]"          # Yahoo Finance, Excel, Parquet, Feather
+pip install "asrquant[providers]"     # ECB / HTTP market-data providers
+pip install "asrquant[visualization]" # Matplotlib, Plotly, HTML reporting
+pip install "asrquant[ml]"            # scikit-learn, SHAP, HMM extensions
+pip install "asrquant[optimization]"  # CVXPY extensions
+pip install "asrquant[volatility]"    # ARCH / GARCH
+pip install "asrquant[all]"
 ```
 
-or through the generic loader:
-
-```python
-prices = asr.data.load(
-    "yahoo",
-    symbols=["SPY", "TLT"],
-    start="2020-01-01",
-)
-```
-
-## ECB yield-curve data
-
-```python
-curve_history = asr.data.ecb_yield_curve(
-    maturities=["3M", "6M", "1Y", "2Y", "5Y", "10Y", "30Y"],
-    start="2020-01-01",
-)
-```
-
-The ECB connector uses the ECB Data Portal SDMX REST service and returns decimal annual rates. The generic `ECBProvider` remains available for arbitrary ECB series keys.
-
-## Other providers
-
-```python
-fred = asr.data.from_provider("fred", "DGS10", field="Value")
-btc = asr.data.from_provider("binance", "BTCUSDT", field="Close", interval="1d")
-```
-
-Provider adapters currently include ECB, Yahoo Finance, FRED, Binance and Alpha Vantage.
-
-## Validate before research
-
-```python
-quality = asr.data.validate(prices)
-print(quality.summary)
-print(quality.issues)
-```
-
-Validation reports duplicates, missing values, infinities, non-numeric values, constant columns, index ordering and sampling gaps without silently changing the input.
+ASRQuant supports Python **3.10–3.13** across the 1.3 release line.
 
 ---
 
-# Hypothesis discovery
-
-ASRQuant does not treat a statistically interesting pattern as scientific novelty. Version 1.2 separates **data evidence** from **novelty evidence**.
-
-## From data
-
-```python
-ideas = asr.hypotheses.from_data(
-    data,
-    domain="fixed_income",
-    targets="target",
-    horizons=(1, 5, 20),
-)
-
-ideas.to_frame()
-```
-
-The discovery layer can screen chronology-safe candidate relationships, lagged effects, regime changes, structural breaks, cointegration and other research observations. Multiple-testing controls and holdout evidence are tracked explicitly.
-
-## From literature
-
-```python
-corpus = asr.LiteratureCorpus.from_pdfs("papers/")
-ideas = asr.hypotheses.from_literature(
-    corpus,
-    topic="interest-rate derivatives",
-)
-```
-
-Source excerpts retain paper/page provenance.
-
-## Combine data + papers + model disagreement + robustness
-
-```python
-ideas = asr.hypotheses.discover(
-    data=data,
-    papers=corpus,
-    predictions=model_predictions,
-    robustness_results=robustness_grid,
-    robustness_metric="sharpe",
-    domain="fixed_income",
-)
-```
-
-## Search and novelty audit
-
-```python
-matches = asr.hypotheses.search(
-    "Forward-curve instability precedes rate-regime changes",
-    hypotheses=ideas,
-    papers=corpus,
-)
-
-audit = asr.hypotheses.audit(ideas[0], corpus=corpus)
-print(audit.novelty_status)
-```
-
-A corpus-relative gap is **not** a claim of global novelty. The public statuses are intentionally conservative.
-
-## Start a research project
-
-```python
-project = ideas[0].start()
-```
-
-That hands the selected hypothesis to the existing reproducible `ResearchProject` workflow.
-
----
-
-# Cross-sectional alpha research
-
-```python
-signal = prices.pct_change(20, fill_method=None).shift(1)
-signal = asr.alpha.cross_sectional_zscore(signal)
-
-future = asr.alpha.forward_returns(prices, periods=(1, 5, 20))
-report = asr.alpha.analyze_signal(
-    signal,
-    future[5],
-    quantiles=5,
-)
-
-print(report.summary)
-```
-
-The alpha layer includes:
-
-- cross-sectional winsorization, ranking and z-scores;
-- signal neutralization against exposures;
-- forward returns;
-- Pearson/Spearman Information Coefficient;
-- IC decay;
-- quantile portfolios and long-short spreads;
-- signal-to-weight conversion;
-- turnover diagnostics.
-
----
-
-# Factor research
-
-## PCA factors
-
-```python
-pca = asr.factors.pca(returns, n_components=3)
-print(pca.explained_variance_ratio)
-print(pca.loadings)
-```
-
-## Time-series factor exposures
-
-```python
-exposure = asr.factors.exposures(
-    asset_returns,
-    factor_returns,
-    covariance="HAC",
-)
-
-print(exposure.to_frame())
-```
-
-## Factor-risk decomposition
-
-```python
-risk = asr.factors.risk_decomposition(
-    weights,
-    betas,
-    factor_covariance,
-    specific_variance,
-)
-
-print(risk.summary)
-```
-
----
-
-# Portfolio risk
-
-```python
-risk = asr.risk.portfolio_risk_report(
-    returns,
-    weights,
-    level=0.99,
-)
-
-print(risk.summary)
-```
-
-Available analytics include:
-
-- historical, Gaussian and Cornish-Fisher VaR;
-- Expected Shortfall;
-- rolling VaR;
-- covariance / Euler risk contribution;
-- Expected Shortfall contribution;
-- scenario P&L;
-- volatility and exposure diagnostics.
-
----
-
-# Market microstructure
-
-```python
-micro = asr.microstructure.microprice(
-    bid,
-    ask,
-    bid_size,
-    ask_size,
-)
-
-ofi = asr.microstructure.order_flow_imbalance(
-    bid,
-    ask,
-    bid_size,
-    ask_size,
-)
-```
-
-The microstructure namespace includes quoted, effective and realized spreads, microprice, price impact, order-flow imbalance, Amihud illiquidity, Roll spread and Kyle lambda.
-
----
-
-# Portfolio construction
-
-```python
-result = asr.portfolio.optimize(
-    returns,
-    method="maximum_sharpe",
-    covariance_method="ledoit_wolf",
-)
-
-print(result.weights)
-print(result.summary)
-```
-
-Supported allocation methods include:
-
-- minimum variance;
-- maximum Sharpe;
-- equal risk contribution / risk parity;
-- maximum diversification;
-- hierarchical risk parity;
-- efficient frontier;
-- Black-Litterman utilities.
-
-Covariance estimators include sample, EWMA, Ledoit-Wolf and OAS.
-
----
-
-# Backtesting
-
-```python
-spec = asr.BacktestSpec(
-    execution_delay=1,
-    costs=asr.CostModel(
-        commission_bps=1,
-        spread_bps=2,
-        slippage_bps=1,
-    ),
-)
-
-result = asr.backtesting.run(
-    prices,
-    target_weights,
-    spec=spec,
-)
-
-print(result.summary)
-result.report("report.html")
-```
-
-The engine tracks target/effective weights, transaction costs, borrow cost, turnover, equity, trades and experiment fingerprints.
-
----
-
-# Statistics and econometrics
-
-```python
-fit = asr.stats.regress(
-    y,
-    x,
-    method="ols",
-    covariance="HAC",
-)
-```
-
-The statistics layer includes OLS, quantile regression, factor regression, polynomial regression, logistic regression, Ridge/Lasso/Elastic Net, stationarity tests, block bootstrap, permutation tests, Benjamini-Hochberg FDR, cointegration, Granger causality, ARIMA, VAR and autoregression utilities.
-
----
-
-# Machine learning
-
-```python
-result = asr.ml.fit(
-    "ridge",
-    features,
-    target,
-    train_size=504,
-    test_size=63,
-    gap=5,
-    task="regression",
-)
-
-print(result.summary)
-```
-
-Walk-forward splits are chronological and estimators are re-fitted per fold. ASRQuant does not randomly shuffle time-series observations in this workflow.
-
----
-
-# Fixed income & interest-rate derivatives
-
-ASRQuant contains a dedicated interest-rate research stack for:
-
-- day-count conventions and schedules;
-- discount factors, zero rates and forward rates;
-- discount and projection curves;
-- multi-curve construction;
-- Nelson-Siegel and Svensson calibration;
-- bonds, FRAs, futures, swaps and basis swaps;
-- OIS / overnight compounding;
-- DV01, key-rate DV01 and convexity;
-- caps, floors, caplets and swaptions;
-- Black-76, Bachelier and SABR volatility;
-- Vasicek, CIR, Hull-White, Ho-Lee and Black-Karasinski;
-- HJM and LMM simulation;
-- PCA / level-slope-curvature analysis;
-- carry and roll-down;
-- curve interpolation risk and no-arbitrage diagnostics;
-- key-rate hedging and rate scenarios;
-- Bermudan LSM building blocks.
-
-Example:
-
-```python
-curve = asr.rates.DiscountCurve.from_zero_rates(
-    maturities=[0.5, 1, 2, 5, 10],
-    zero_rates=[0.025, 0.027, 0.029, 0.032, 0.034],
-)
-
-analysis = asr.rates.analyze(curve)
-print(analysis.summary)
-```
-
----
-
-# Derivatives
-
-```python
-price = asr.options.price(
-    "black_scholes",
-    spot=100,
-    strike=100,
-    maturity=1.0,
-    rate=0.03,
-    volatility=0.20,
-)
-
-print(price.summary)
-```
-
-Pricing tools include Black-Scholes-Merton, Black-76, Bachelier, CRR trees, Monte Carlo and implied-volatility inversion.
-
----
-
-# Simulation and Monte Carlo
-
-```python
-paths = asr.stochastic.simulate(
-    "heston",
-    steps=252,
-    paths=10_000,
-    random_state=7,
-)
-```
-
-Supported process families include ABM, GBM, OU, CIR, Vasicek, Heston, Merton jump diffusion and regime-switching processes.
-
-The universal Monte Carlo layer supports custom generators, estimators, empirical quantiles, confidence intervals, expected shortfall, path-dependent losses, parameter surfaces and animations.
-
----
-
-# Research workflow
-
-ASRQuant can connect the full chain:
-
-```text
-Evidence / Data
-      ↓
-Observation
-      ↓
-Research Question
-      ↓
-Hypothesis
-      ↓
-Data Plan
-      ↓
-Features / Model / Signal
-      ↓
-Backtest / Experiment
-      ↓
-Robustness & Falsification
-      ↓
-Decision
-      ↓
-Research Note / Publication Pack
-```
-
-The existing `ResearchProject`, `ResearchBoard` and `WeeklyResearchCycle` APIs remain available.
-
----
-
-# Guarded trading and production readiness
-
-ASRQuant includes paper-broker objects, risk policies, audit storage, reconciliation and guarded live-broker primitives. These are deliberately separated from research validity.
-
-Installing the package **does not authorize live capital deployment**. Live components require explicit deployment evidence, a matching certificate and risk-policy gates.
-
----
-
-# End-to-end example
+## One import
 
 ```python
 import asrquant as asr
 
-# 1. Data
-prices = asr.data.yahoo(["SPY", "TLT", "GLD"], start="2018-01-01")
-quality = asr.data.validate(prices)
+print(asr.__version__)
+```
 
-# 2. Returns
-returns = prices.pct_change(fill_method=None).dropna()
+Recommended public namespaces:
 
-# 3. Factors
-pca = asr.factors.pca(returns, n_components=2)
+```text
+asr.data           market data, validation, snapshots and providers
+asr.hypotheses     hypothesis discovery and novelty audit
+asr.alpha          cross-sectional signal research
+asr.factors        PCA, exposures and factor-risk decomposition
+asr.risk           VaR, ES, EVT, drawdown and portfolio risk
+asr.validation     CPCV, PBO, Reality Check, SPA, leakage, multiverse
+asr.scenarios      deterministic cross-domain stress scenarios
+asr.credit         hazard curves and CDS analytics
+asr.backtesting    auditable backtesting
+asr.portfolio      optimization, constraints and risk budgeting
+asr.costs          transaction-cost and impact models
+asr.stats          econometrics, bootstrap and inference
+asr.ml             leakage-aware walk-forward ML
+asr.options        derivatives pricing and Greeks
+asr.rates          conventions, curves, instruments and rates risk
+asr.calibration    calibrated-model diagnostics
+asr.sensitivities first-, second- and cross-sensitivities
+asr.regimes        volatility and structural-break diagnostics
+asr.stochastic     stochastic processes
+asr.mc             Monte Carlo and variance reduction
+asr.research       experiments, lineage and research reports
+asr.trading        paper trading and guarded execution primitives
+```
 
-# 4. Portfolio
-portfolio = asr.portfolio.optimize(
-    returns,
-    method="maximum_sharpe",
-    covariance_method="ledoit_wolf",
+---
+
+## Five-minute examples
+
+### Public ECB curve
+
+```python
+import asrquant as asr
+
+curve_history = asr.data.ecb_yield_curve(
+    maturities=["3M", "6M", "1Y", "2Y", "5Y", "10Y", "30Y"],
+    start="2024-01-01",
 )
 
-# 5. Risk
+quality = asr.data.validate(curve_history)
+print(quality.summary)
+```
+
+### Portfolio risk
+
+```python
 risk = asr.risk.portfolio_risk_report(
     returns,
-    portfolio.weights,
+    weights,
     level=0.99,
 )
 
-print(portfolio.summary)
 print(risk.summary)
 ```
 
-For research projects, replace step 2 with `asr.hypotheses.discover(...)` and hand the selected candidate to `candidate.start()`.
+### Research report
 
----
-
-# Reproducibility rules
-
-ASRQuant is opinionated about research hygiene:
-
-- preserve source/provenance metadata;
-- make missing-data policy explicit;
-- separate signal time from execution time;
-- model costs explicitly;
-- use chronological validation for time series;
-- correct for multiple testing when exploring many hypotheses;
-- separate in-sample evidence from holdout evidence;
-- separate data support from scientific novelty;
-- save configuration and experiment fingerprints;
-- never infer live-deployment authorization from package installation.
-
----
-
-# Development
-
-```bash
-git clone https://github.com/Alpha-Stochastic-Research/asr-quant.git
-cd asr-quant
-
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -e ".[dev,all]"
-```
-
-Run the full domain suite:
-
-```bash
-python scripts/test_all.py --group all
-```
-
-Run the 1.2 integration suite:
-
-```bash
-pytest -q \
-  tests/test_api_consistency_v120.py \
-  tests/test_data_sources_v120.py \
-  tests/test_hypotheses_v120.py \
-  tests/test_alpha_v120.py \
-  tests/test_factors_v120.py \
-  tests/test_risk_v120.py \
-  tests/test_microstructure_v120.py \
-  tests/test_end_to_end_v120.py
-```
-
-Build distributions:
-
-```bash
-python -m build
-python -m twine check --strict dist/*
+```python
+report = asr.research.ResearchReport("rates_research")
+report.add(experiment, "experiment")
+report.add(risk, "risk")
+report.export("research_report.html")
 ```
 
 ---
 
-# Repository structure
+## Research standard
 
-```text
-src/asrquant/
-├── api.py                  QuantLab high-level API
-├── data.py                 data loading / validation
-├── providers.py            ECB, Yahoo, FRED, Binance, Alpha Vantage
-├── hypotheses.py           hypothesis discovery / search / audit
-├── discovery.py            research-candidate discovery board
-├── workflow.py             research project workflow
-├── alpha.py                cross-sectional alpha research
-├── factors.py              PCA / factor exposures / factor risk
-├── risk.py                 portfolio risk and scenarios
-├── microstructure.py       execution / liquidity analytics
-├── backtest.py             auditable backtesting
-├── optimization.py         portfolio construction
-├── statistics.py           econometrics / inference
-├── machine_learning.py     walk-forward ML
-├── derivatives.py          option pricing
-├── interest_rates.py       fixed income / interest-rate derivatives
-├── simulation.py           stochastic processes
-├── monte_carlo.py          generic Monte Carlo engine
-├── volatility.py           volatility models
-├── trading.py              paper trading
-├── production.py           readiness gates
-├── live.py                 guarded broker execution
-├── audit_store.py          durable audit log
-└── viz/                    visualization catalogue
-```
+ASRQuant is built for workflows where a result should be able to answer:
 
-The package keeps domain modules explicit rather than hiding quantitative logic behind a monolithic object hierarchy.
+- **Which data produced this result?**
+- **Which assumptions and conventions were used?**
+- **What changed across model specifications?**
+- **Was chronology respected?**
+- **What validation evidence exists?**
+- **What are the known limitations?**
+- **Can another researcher reproduce the result?**
+
+ASRQuant does not replace quantitative judgement. It makes the research path easier to inspect, review and challenge.
 
 ---
 
-# Project links
+## Documentation
 
-- Website: https://www.asr-lab.online
-- Repository: https://github.com/Alpha-Stochastic-Research/asr-quant
-- Issues: https://github.com/Alpha-Stochastic-Research/asr-quant/issues
+- **Documentation:** https://docs.asr-lab.online/
+- **Quickstart:** https://docs.asr-lab.online/quickstart/
+- **Repository:** https://github.com/Alpha-Stochastic-Research/asr-quant
+- **PyPI:** https://pypi.org/project/asrquant/
+- **Issues:** https://github.com/Alpha-Stochastic-Research/asr-quant/issues
+- **Paper:** [ASRQuant paper](paper/ASRQuant_paper.pdf)
 
-# Contributors and citation
+---
 
-ASRQuant 1.3.0 recognizes **Alpha Kabinet TOURE** and **Srijan Mishra** as software contributors, with **Alpha Stochastic Research** as the institutional maintainer. See `CONTRIBUTORS.md` for contribution roles.
+## Contributing
 
-For software citation metadata, use `CITATION.cff`. Manuscript authorship is tracked separately in `paper/`; software contribution does not automatically imply authorship of a separate paper.
+ASRQuant is open source under the MIT License.
 
-# License
+Useful contributions include:
 
-MIT License. See `LICENSE`.
+- reproducible bug reports;
+- numerical validation cases;
+- additional market conventions;
+- examples and notebooks;
+- documentation improvements;
+- new tests and benchmark cases.
 
-# Disclaimer
+Before contributing, please read [CONTRIBUTING.md](CONTRIBUTING.md).
 
-ASRQuant is research software. It is not investment advice, a brokerage service, or a guarantee that a model, strategy, backtest or hypothesis is economically valid. Users remain responsible for data licenses, model validation, operational controls and applicable regulation.
+If ASRQuant is useful in your research, **star the repository** — it helps other quantitative-finance researchers discover the project.
+
+---
+
+## Citation
+
+If ASRQuant contributes to research or teaching, please cite the project using [CITATION.cff](CITATION.cff) and the associated ASRQuant paper where appropriate.
+
+---
+
+## Disclaimer
+
+ASRQuant is research infrastructure. It is **not investment advice, a broker, or an execution venue**. Guarded execution components require deployment-specific authorization and remain fail-closed by design.
+
+<div align="center">
+
+**Built by [Alpha Stochastic Research](https://www.asr-lab.online)**
+
+</div>

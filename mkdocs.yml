@@ -75,6 +75,7 @@ nav:
   - Home: index.md
   - Getting Started:
       - Quickstart: quickstart.md
+      - Public Practical Case: public_practical_case.md
       - One-import API: one_import_api.md
       - Data Sources: data_sources.md
       - Research Workflow: research_workflow.md
